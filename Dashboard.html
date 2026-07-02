@@ -1,0 +1,5242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Straight Arrow Sales Dashboard</title>
+    <style>
+         :root {
+            --font-body: "Segoe UI", Arial, sans-serif; 
+            --font-number: Calibri, "Segoe UI", sans-serif;
+            --bg: #f5f8fc;
+            --surface: #ffffff;
+            --surface-soft: #f8fbff;
+            --ink: #243b53;
+            --muted: #62708a;
+            --faint: #8a97ad;
+            --line: #dfe7f2;
+            --line-strong: #c9d7eb;
+            --brand: #0f5eb8;
+            --brand-strong: #084d9b;
+            --brand-soft: #eaf3ff;
+            --green: #147a3f;
+            --green-soft: #e8f6ee;
+            --orange: #b75f00;
+            --orange-soft: #fff3e1;
+            --red: #b42318;
+            --red-soft: #fff0ee;
+            --purple: #6652c9;
+            --purple-soft: #f0edff;
+            --shadow: 0 10px 26px rgba(37, 64, 104, 0.07);
+            --shadow-soft: 0 6px 18px rgba(37, 64, 104, 0.05);
+            --radius: 8px;
+            --radius-lg: 12px;
+            --topbar-height: 66px;
+            --sidebar-width: 220px;
+            --focus: 0 0 0 3px rgba(15, 94, 184, 0.18);
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        html {
+            min-height: 100%;
+            background: var(--bg);
+        }
+        
+        body {
+            min-height: 100%;
+            margin: 0;
+            color: var(--ink);
+            background: radial-gradient(circle at 15% 0%, rgba(15, 94, 184, 0.07), transparent 26rem), linear-gradient(180deg, #fbfdff 0%, var(--bg) 38%, #eef4fb 100%);
+            font-family: var(--font-body);
+            font-size: 13px;
+            letter-spacing: 0;
+        }
+        
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+        
+        button {
+            cursor: pointer;
+        }
+        
+        button:focus-visible,
+        input:focus,
+        select:focus {
+            outline: none;
+            box-shadow: var(--focus);
+            border-color: var(--brand);
+        }
+        
+        .app-shell {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            height: var(--topbar-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 9px 22px;
+            border-bottom: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(18px);
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        
+        .brand-fallback {
+            display: grid;
+            gap: 1px;
+            min-width: 0;
+        }
+        
+        .brand-word {
+            color: var(--brand-strong);
+            font-size: clamp(24px, 2.4vw, 31px);
+            font-weight: 800;
+            line-height: 1;
+            white-space: nowrap;
+        }
+        
+        .brand-line {
+            width: min(230px, 34vw);
+            height: 2px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--brand), rgba(15, 94, 184, 0.2));
+        }
+        
+        .brand-subtitle {
+            color: var(--brand-strong);
+            font-size: 11px;
+            font-style: italic;
+            line-height: 1.25;
+            white-space: nowrap;
+        }
+        
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        
+        .icon-btn,
+        .action-btn,
+        .primary-btn,
+        .secondary-btn,
+        .nav-item,
+        .expand-btn,
+        .inline-link {
+            border: 1px solid transparent;
+            border-radius: var(--radius);
+            background: transparent;
+            color: var(--ink);
+            transition: background 160ms ease, border-color 160ms ease, transform 160ms ease, color 160ms ease;
+        }
+        
+        .icon-btn,
+        .action-btn {
+            min-height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-color: var(--line);
+            background: var(--surface);
+            color: var(--ink);
+            box-shadow: 0 2px 10px rgba(37, 64, 104, 0.04);
+        }
+        
+        .icon-btn {
+            width: 48px;
+            padding: 0;
+        }
+
+        .icon-btn.active {
+            background: var(--brand-soft);
+            color: var(--brand);
+            border-color: #b7d1f2;
+        }
+        
+        .action-btn {
+            padding: 0 14px;
+            font-weight: 700;
+        }
+        
+        .icon-btn:hover,
+        .action-btn:hover,
+        .secondary-btn:hover,
+        .inline-link:hover {
+            border-color: var(--line-strong);
+            background: var(--brand-soft);
+            color: var(--brand-strong);
+        }
+
+        .icon-btn.active {
+            background: var(--brand-soft);
+            color: var(--brand);
+            border-color: #b7d1f2;
+        }
+        
+        .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        
+        .layout {
+            display: grid;
+            grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+            flex: 1;
+            min-height: 0;
+        }
+        
+        .sidebar {
+            border-right: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(14px);
+            padding: 18px 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            height: calc(100vh - var(--topbar-height));
+            max-height: calc(100vh - var(--topbar-height));
+            overflow-y: auto;
+            position: sticky;
+            top: var(--topbar-height);
+            align-self: start;
+        }
+        
+        .nav-list {
+            display: grid;
+            gap: 6px;
+        }
+        
+        .nav-item {
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 12px;
+            color: var(--ink);
+            text-align: left;
+            font-weight: 700;
+        }
+        
+        .nav-item:hover,
+        .nav-item.is-active {
+            color: var(--brand-strong);
+            background: linear-gradient(90deg, var(--brand-soft), rgba(234, 243, 255, 0.4));
+            border-color: rgba(15, 94, 184, 0.08);
+        }
+        
+        .profile-card {
+            margin-top: auto;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            background: var(--surface);
+            padding: 12px;
+            box-shadow: var(--shadow-soft);
+            display: grid;
+            grid-template-columns: 42px minmax(0, 1fr);
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: inline-grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--brand), #2e7ad3);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 14px;
+        }
+        
+        .profile-main {
+            min-width: 0;
+        }
+        
+        .profile-name {
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .profile-meta {
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+        }
+        
+        .content {
+            min-width: 0;
+            padding: 20px;
+            display: grid;
+            gap: 18px;
+        }
+        
+        .content>section {
+            scroll-margin-top: calc(var(--topbar-height) + 18px);
+        }
+        
+        .section-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            min-width: 0;
+        }
+        
+        .eyebrow {
+            color: var(--brand-strong);
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+        }
+        
+        h1,
+        h2,
+        h3 {
+            margin: 0;
+            letter-spacing: 0;
+        }
+        
+        h1 {
+            margin-top: 4px;
+            font-size: clamp(21px, 2.1vw, 28px);
+            line-height: 1.12;
+        }
+        
+        h2 {
+            font-size: 18px;
+            line-height: 1.3;
+            font-weight: 600;
+            color: #243b53;
+        }
+        
+        h3 {
+            font-size: 14px;
+            line-height: 1.25;
+        }
+        
+        .subtle {
+            color: var(--muted);
+            line-height: 1.45;
+        }
+        
+        .access-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 36px;
+            padding: 0 12px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: var(--surface);
+            color: var(--brand-strong);
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        
+        .alert-region {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .notice,
+        .error-box {
+            display: none;
+            border-radius: var(--radius);
+            border: 1px solid var(--line);
+            padding: 12px 14px;
+            background: var(--surface);
+            color: var(--ink);
+            box-shadow: var(--shadow-soft);
+            line-height: 1.45;
+        }
+        
+        .notice.is-visible,
+        .error-box.is-visible {
+            display: block;
+        }
+        
+        .notice {
+            border-color: #b7d1f2;
+            background: #f2f7ff;
+        }
+        
+        .error-box {
+            border-color: #ffd0ca;
+            background: var(--red-soft);
+            color: var(--red);
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(170px, 1fr));
+            gap: 16px;
+        }
+        
+        .card {
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            background: var(--surface);
+            box-shadow: var(--shadow-soft);
+            min-width: 0;
+            transition: box-shadow 200ms ease, transform 200ms ease, border-color 200ms ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            border-color: var(--line-strong);
+        }
+        
+        .kpi-card {
+            position: relative;
+            min-height: 120px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 44px minmax(0, 1fr);
+            align-items: center;
+            gap: 14px;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--brand);
+            opacity: 0.85;
+        }
+
+        .kpi-card.green::before {
+            background: var(--green);
+        }
+
+        .kpi-card.orange::before {
+            background: var(--orange);
+        }
+
+        .kpi-card.purple::before {
+            background: var(--purple);
+        }
+        
+        .kpi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: inline-grid;
+            place-items: center;
+            background: var(--brand-soft);
+            color: var(--brand-strong);
+            transition: transform 200ms ease;
+        }
+
+        .kpi-card:hover .kpi-icon {
+            transform: scale(1.06);
+        }
+        
+        .kpi-card.green .kpi-icon {
+            background: var(--green-soft);
+            color: var(--green);
+        }
+        
+        .kpi-card.orange .kpi-icon {
+            background: var(--orange-soft);
+            color: var(--orange);
+        }
+        
+        .kpi-card.purple .kpi-icon {
+            background: var(--purple-soft);
+            color: var(--purple);
+        }
+        
+        .kpi-label {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+        }
+        
+        .kpi-value {
+            margin-top: 6px;
+            color: var(--ink);
+            font-size: clamp(24px, 2.2vw, 32px);
+            line-height: 1.05;
+            font-weight: 500;
+            font-family: var(--font-number);
+            letter-spacing: -0.01em;
+            overflow-wrap: anywhere;
+        }
+        
+        .kpi-note {
+            margin-top: 4px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.35;
+        }
+        
+        .filter-bar {
+            position: relative;
+            z-index: 1;
+            padding: 14px;
+        }
+        
+        .filter-title {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 10px;
+            color: var(--ink);
+            font-weight: 800;
+        }
+        
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+            gap: 10px;
+            align-items: end;
+        }
+        
+        .field {
+            display: grid;
+            gap: 6px;
+            min-width: 0;
+        }
+        
+        .field.span-2 {
+            grid-column: auto;
+        }
+        
+        .field.span-3 {
+            grid-column: auto;
+        }
+        
+        .field.span-4 {
+            grid-column: auto;
+        }
+        
+        .field label {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 800;
+        }
+        
+        .field input,
+        .field select {
+            width: 100%;
+            min-height: 38px;
+            border: 1px solid var(--line-strong);
+            border-radius: var(--radius);
+            background: var(--surface);
+            color: var(--ink);
+            padding: 0 10px;
+            min-width: 0;
+        }
+        
+        .field input::placeholder {
+            color: var(--faint);
+        }
+        
+        .filter-actions {
+            grid-column: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .primary-btn,
+        .secondary-btn {
+            min-height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 12px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+            color: #ffffff;
+            border-color: var(--brand);
+            box-shadow: 0 10px 18px rgba(15, 94, 184, 0.18);
+        }
+        
+        .primary-btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .secondary-btn {
+            background: var(--surface);
+            color: var(--brand-strong);
+            border-color: var(--line-strong);
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+        
+        .chart-card {
+            min-height: 330px;
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--line);
+        }
+        
+        .card-header .subtle {
+            font-size: 11px;
+        }
+        
+        .chart-stage {
+            min-height: 255px;
+            padding: 12px 16px 16px;
+            display: grid;
+            align-items: stretch;
+            overflow: hidden;
+        }
+        
+        .chart-stage svg {
+            width: 100%;
+            height: 100%;
+            min-height: 225px;
+            display: block;
+        }
+        
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+        
+        .table-card {
+            overflow: hidden;
+        }
+        
+        .table-wrap {
+            overflow: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 0;
+            table-layout: fixed;
+        }
+        
+        th,
+        td {
+            padding: 11px 12px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            vertical-align: middle;
+            white-space: normal;
+            overflow-wrap: anywhere;
+        }
+        
+        th {
+            color: #64748b;
+            background: #f8fafc;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        
+        td {
+            color: var(--ink);
+            font-size: 12px;
+        }
+        
+        tbody tr {
+            transition: background 140ms ease;
+        }
+        
+        tbody tr:hover {
+            background: #f7fbff;
+        }
+
+        tbody tr.row-clickable {
+            cursor: pointer;
+        }
+
+        tbody tr.row-clickable:hover {
+            background: #f3f8ff;
+        }
+
+        tbody tr.row-clickable:focus-visible {
+            outline: none;
+            box-shadow: inset 0 0 0 2px var(--brand);
+        }
+        
+        .num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+        
+        .order-grid-card {
+            overflow: hidden;
+        }
+        
+        .order-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--line);
+            background: var(--surface-soft);
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 800;
+        }
+        
+        .order-grid {
+            display: grid;
+            min-width: 0;
+        }
+        
+        .order-grid-header,
+        .order-row {
+            display: grid;
+            grid-template-columns: minmax(88px, 0.8fr) minmax(138px, 1.55fr) minmax(105px, 1fr) minmax(98px, 0.9fr) minmax(100px, 0.88fr) minmax(86px, 0.72fr) 38px;
+            align-items: center;
+            column-gap: 10px;
+        }
+        
+        .order-grid-header {
+            min-height: 42px;
+            min-width: 0;
+            padding: 0 14px;
+            color: var(--muted);
+            background: var(--surface);
+            border-bottom: 1px solid var(--line);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        
+        .order-row {
+            min-height: 58px;
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--line);
+            background: var(--surface);
+            cursor: pointer;
+            transition: background 140ms ease, border-color 140ms ease;
+        }
+        
+        .order-row:hover {
+            background: #f8fbff;
+        }
+        
+        .order-row.is-expanded {
+            background: #f3f8ff;
+            border-bottom-color: #b8d2f2;
+        }
+        
+        .order-row.is-selected {
+            background: #edf5ff;
+            box-shadow: inset 3px 0 0 var(--brand);
+        }
+        
+        .order-cell {
+            min-width: 0;
+            padding-right: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            font-size: 12px;
+            line-height: 1.32;
+        }
+        
+        .order-cell strong {
+            font-size: 13px;
+        }
+        
+        .order-subtext {
+            display: block;
+            margin-top: 3px;
+            color: var(--muted);
+            font-size: 11px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+        }
+        
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 26px;
+            padding: 0 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            background: var(--brand-soft);
+            color: var(--brand-strong);
+            border: 1px solid rgba(15, 94, 184, 0.14);
+            max-width: 100%;
+        }
+        
+        .status-pill.released {
+            background: var(--green-soft);
+            color: var(--green);
+            border-color: rgba(20, 122, 63, 0.16);
+        }
+        
+        .status-pill.open,
+        .status-pill.pending {
+            background: var(--orange-soft);
+            color: var(--orange);
+            border-color: rgba(183, 95, 0, 0.16);
+        }
+        
+        .status-pill.cancelled {
+            background: var(--red-soft);
+            color: var(--red);
+            border-color: rgba(180, 35, 24, 0.16);
+        }
+        
+        .expand-btn {
+            width: 34px;
+            height: 34px;
+            display: inline-grid;
+            place-items: center;
+            justify-self: end;
+            color: var(--brand-strong);
+            background: transparent;
+            border-color: transparent;
+        }
+        
+        .expand-btn:hover {
+            background: var(--brand-soft);
+            border-color: rgba(15, 94, 184, 0.12);
+        }
+        
+        .expand-btn svg {
+            transition: transform 160ms ease;
+        }
+        
+        .expand-btn[aria-expanded="true"] svg {
+            transform: rotate(90deg);
+        }
+        
+        .line-panel {
+            border-bottom: 1px solid var(--line);
+            background: linear-gradient(180deg, #f5f9ff, #ffffff);
+            padding: 12px 14px 14px;
+            overflow: auto;
+        }
+        
+        .line-panel table {
+            min-width: 0;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: var(--surface);
+        }
+        
+        .order-detail-backdrop {
+            position: fixed;
+            inset: var(--topbar-height) 0 0 0;
+            z-index: 80;
+            background: rgba(21, 41, 75, 0.22);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 180ms ease;
+        }
+        
+        .order-detail-backdrop.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .order-detail-panel {
+            position: fixed;
+            top: var(--topbar-height);
+            right: 0;
+            bottom: 0;
+            z-index: 90;
+            width: min(520px, calc(100vw - 18px));
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            border-left: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: -18px 0 40px rgba(37, 64, 104, 0.18);
+            transform: translateX(106%);
+            transition: transform 200ms ease;
+            pointer-events: none;
+        }
+        
+        .order-detail-panel.is-open {
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+        
+        .detail-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--line);
+            background: linear-gradient(180deg, #ffffff, #f7fbff);
+            display: grid;
+            gap: 12px;
+        }
+
+        .detail-back {
+            justify-self: start;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 32px;
+            padding: 0 12px 0 8px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: var(--surface);
+            color: var(--brand-strong);
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .detail-back:hover {
+            background: var(--brand-soft);
+            border-color: var(--line-strong);
+        }
+
+        .detail-back[hidden] {
+            display: none;
+        }
+        
+        .detail-title-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        
+        .detail-title {
+            display: grid;
+            gap: 4px;
+            min-width: 0;
+        }
+        
+        .detail-title strong {
+            font-size: 18px;
+            line-height: 1.15;
+            overflow-wrap: anywhere;
+        }
+        
+        .detail-close {
+            width: 36px;
+            height: 36px;
+            display: inline-grid;
+            place-items: center;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--surface);
+            color: var(--ink);
+            flex-shrink: 0;
+        }
+        
+        .detail-close:hover {
+            background: var(--brand-soft);
+            color: var(--brand-strong);
+        }
+        
+        .detail-body {
+            min-height: 0;
+            overflow: auto;
+            padding: 16px;
+            display: grid;
+            align-content: start;
+            gap: 14px;
+        }
+        
+        .detail-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+        
+        .detail-metric,
+        .detail-field,
+        .detail-line {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--surface);
+        }
+        
+        .detail-metric {
+            padding: 11px 12px;
+        }
+        
+        .detail-label {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        
+        .detail-value {
+            margin-top: 4px;
+            color: var(--ink);
+            font-size: 13px;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+        
+        .detail-fields {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+        
+        .detail-field {
+            padding: 10px 12px;
+        }
+        
+        .detail-lines-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 800;
+        }
+        
+        .detail-line-list {
+            display: grid;
+            gap: 8px;
+        }
+        
+        .detail-line {
+            padding: 10px 12px;
+            display: grid;
+            gap: 8px;
+        }
+        
+        .detail-line-clickable {
+            cursor: pointer;
+            transition: background 140ms ease, border-color 140ms ease;
+        }
+        
+        .detail-line-clickable:hover {
+            background: var(--brand-soft);
+            border-color: var(--line-strong);
+        }
+        
+        .detail-line-clickable:focus-visible {
+            outline: none;
+            box-shadow: var(--focus);
+        }
+        
+        .detail-line-top,
+        .detail-line-bottom {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px;
+            align-items: start;
+        }
+        
+        .detail-line-desc {
+            color: var(--ink);
+            font-weight: 800;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+        
+        .detail-line-meta {
+            color: var(--muted);
+            font-size: 11px;
+            overflow-wrap: anywhere;
+        }
+        
+        .empty-state {
+            min-height: 170px;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            color: var(--muted);
+            padding: 28px;
+            line-height: 1.45;
+        }
+        
+        .empty-state strong {
+            display: block;
+            color: var(--ink);
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        
+        mark {
+            background: #fff0a8;
+            color: inherit;
+            padding: 0 2px;
+            border-radius: 3px;
+        }
+        
+        .footer {
+            padding: 4px 0 22px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: none;
+            place-items: center;
+            background: rgba(245, 248, 252, 0.76);
+            backdrop-filter: blur(9px);
+        }
+        
+        .loading-overlay.is-visible {
+            display: grid;
+        }
+        
+        .loader-card {
+            min-width: 260px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            background: var(--surface);
+            box-shadow: var(--shadow);
+            padding: 22px;
+            display: grid;
+            justify-items: center;
+            gap: 12px;
+            color: var(--ink);
+            font-weight: 800;
+        }
+        
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 4px solid #d6e5f7;
+            border-top-color: var(--brand);
+            animation: spin 850ms linear infinite;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .chart-axis {
+            stroke: #c3d2e6;
+            stroke-width: 1;
+        }
+        
+        .chart-grid-line {
+            stroke: #eef3fa;
+            stroke-width: 1;
+        }
+        
+        .chart-label {
+            fill: #5b6b85;
+            font-size: 12px;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+        
+        .chart-value {
+            fill: #1c3354;
+            font-size: 12px;
+            font-weight: 700;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+        
+        .chart-bar {
+            fill: #2f75c8;
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: bar-in 420ms ease both;
+        }
+        
+        .chart-bar.alt {
+            fill: #2d9461;
+        }
+        
+        .chart-line {
+            fill: none;
+            stroke: #0f5eb8;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            animation: line-in 560ms ease both;
+        }
+        
+        .chart-dot {
+            fill: #ffffff;
+            stroke: #0f5eb8;
+            stroke-width: 3;
+            transform-box: fill-box;
+            transform-origin: center;
+            animation: dot-in 360ms ease both;
+            animation-delay: 280ms;
+        }
+
+        @keyframes bar-in {
+            from {
+                transform: scaleY(0.85);
+                opacity: 0;
+            }
+            to {
+                transform: scaleY(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes line-in {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes dot-in {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .chart-bar,
+            .chart-line,
+            .chart-dot {
+                animation: none;
+            }
+        }
+        
+        @media (max-width: 1380px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, minmax(190px, 1fr));
+            }
+        }
+        
+        @media (max-width: 1120px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                position: static;
+                height: auto;
+                max-height: none;
+                overflow-y: visible;
+                min-height: 0;
+                border-right: 0;
+                border-bottom: 1px solid var(--line);
+                padding: 10px 16px;
+            }
+            .nav-list {
+                grid-auto-flow: column;
+                grid-auto-columns: max-content;
+                overflow-x: auto;
+                padding-bottom: 2px;
+            }
+            .nav-item {
+                min-height: 44px;
+                padding: 0 12px;
+            }
+            .profile-card {
+                display: none;
+            }
+            .chart-grid,
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 820px) {
+             :root {
+                --topbar-height: 62px;
+            }
+            .topbar {
+                align-items: center;
+                padding: 8px 12px;
+            }
+            .brand-word {
+                font-size: 22px;
+            }
+            .brand-subtitle {
+                display: none;
+            }
+            .topbar-actions {
+                gap: 6px;
+            }
+            .action-btn span:not(.icon) {
+                display: none;
+            }
+            .action-btn {
+                width: 44px;
+                padding: 0;
+            }
+            .content {
+                padding: 16px;
+            }
+            .section-heading {
+                display: grid;
+            }
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            .filters {
+                grid-template-columns: 1fr;
+            }
+            .field.span-2,
+            .field.span-3,
+            .field.span-4,
+            .filter-actions {
+                grid-column: auto;
+            }
+            .filter-actions {
+                grid-template-columns: 1fr;
+            }
+            .order-grid-header {
+                display: none;
+                min-width: 0;
+            }
+            .order-grid {
+                min-width: 0;
+            }
+            .order-row {
+                grid-template-columns: 1fr 44px;
+                gap: 10px 0;
+                padding: 14px 16px;
+            }
+            .order-cell {
+                grid-column: 1 / 2;
+                white-space: normal;
+                padding-right: 8px;
+            }
+            .order-cell::before {
+                content: attr(data-label);
+                display: block;
+                margin-bottom: 3px;
+                color: var(--muted);
+                font-size: 11px;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 0.03em;
+            }
+            .order-row .expand-btn {
+                grid-column: 2 / 3;
+                grid-row: 1 / 2;
+            }
+            .order-detail-panel {
+                width: 100vw;
+            }
+            .detail-metrics,
+            .detail-fields {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        
+        /* @media print {
+            .topbar-actions,
+            .sidebar,
+            .filter-bar,
+            .expand-btn,
+            .order-detail-backdrop,
+            .order-detail-panel {
+                display: none !important;
+            }
+            .topbar {
+                position: static;
+            }
+            .layout {
+                display: block;
+            }
+            .content {
+                padding: 16px 0;
+            }
+            .card {
+                break-inside: avoid;
+                box-shadow: none;
+            }
+        } */
+
+        #printReport {
+            display: none;
+        }
+
+        .report-modal{
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,.45);
+            display:none;
+            align-items:center;
+            justify-content:center;
+            z-index:9999;
+        }
+
+        .report-modal.show{
+            display:flex;
+        }
+
+        .report-modal-content{
+            width:min(1400px,95vw);
+            height:min(850px,90vh);
+            background:white;
+            border-radius:12px;
+            display:flex;
+            flex-direction:column;
+            overflow:hidden;
+        }
+        .report-modal-header{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:16px 20px;
+            border-bottom:1px solid #ddd;
+            background:#fff;
+            flex-shrink:0;
+        }
+
+        .report-modal-header h2{
+            margin:0;
+        }
+
+        .report-layout{
+            flex:1;
+            min-height:0;
+        }
+
+        .report-footer{
+            display:flex;
+            justify-content:flex-end;
+            align-items:center;
+            padding:16px 20px;
+            border-top:1px solid #ddd;
+            background:#fff;
+            flex-shrink:0;
+        }
+        .report-layout{
+            display:grid;
+            grid-template-columns:280px 1fr;
+            height:100%;
+        }
+
+        .report-list{
+            border-right:1px solid #ddd;
+            padding:20px;
+        }
+
+        .report-option{
+            border:1px solid #ddd;
+            border-radius:8px;
+            padding:15px;
+            margin-bottom:15px;
+            cursor:pointer;
+        }
+
+        .report-option.active{
+            border:2px solid #0f5eb8;
+            background:#eef5ff;
+        }
+
+        .report-preview{
+            background:#edf2f7;
+            padding:30px;
+            overflow:auto;
+        }
+        .preview-page{
+            width:min(1000px,100%);
+            margin:auto;
+            background:white;
+            padding:40px;
+            box-shadow:0 4px 20px rgba(0,0,0,.15);
+            border-radius:8px;
+        }
+        @media (max-width: 1024px){
+
+            .report-layout{
+                grid-template-columns:1fr;
+            }
+
+            .report-list{
+                border-right:none;
+                border-bottom:1px solid #ddd;
+                padding:15px;
+            }
+
+            .preview-page{
+                width:100%;
+                padding:20px;
+            }
+        }
+        .report-footer{
+            padding:20px;
+            border-top:1px solid #ddd;
+            text-align:right;
+        }
+
+        .executive-kpis{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:20px;
+            }
+
+            .exec-card{
+                border:1px solid #d9d9d9;
+                padding:20px;
+                border-radius:8px;
+                background:#fafafa;
+            }
+
+            .exec-card h3{
+                margin:0 0 10px 0;
+                font-size:13px;
+                color:#666;
+            }
+
+            .exec-card div{
+                font-size:28px;
+                font-weight:600;
+                color:#0f5eb8;
+            }
+
+            .group-table{
+                margin:0 0 0 0;
+                border-collapse:collapse;
+                width:100%;
+                break-inside:avoid;
+            }
+
+            .group-row td{
+                border:none;
+                font-weight:700;
+            }
+
+            .group-row-salesperson td{
+                background:#fff3a3;
+                font-size:15px;
+                padding:10px 8px;
+            }
+
+            .group-label{
+                font-size:11px;
+                font-weight:600;
+                text-transform:uppercase;
+                letter-spacing:.04em;
+                width:70px;
+            }
+
+            .group-row-customer td{
+                background:#ffb74d;
+                font-size:13px;
+                padding:8px 8px;
+            }
+
+            .line-table{
+                margin:0 0 14px 0;
+                width:100%;
+            }
+
+            .line-table th,
+            .line-table td{
+                font-size:11px;
+                padding:4px 8px;
+            }
+
+            tbody.order-group{
+                break-inside:avoid;
+            }
+
+            .order-group-line td{
+                border-left:3px solid #2f75c8;
+            }
+
+            .order-group-line td:not(:first-child){
+                border-left:1px solid #000;
+            }
+
+            .order-subtotal-row td{
+                font-weight:700;
+                border-top:2px solid #2f75c8;
+                border-left:3px solid #2f75c8;
+                background:#dbe9f8;
+            }
+
+            .order-subtotal-row td.num{
+                font-weight:700;
+            }
+
+            .num{
+                text-align:right;
+            }
+
+         @media print {
+
+            .report-cover{
+                text-align:center;
+                margin-bottom:30px;
+            }
+
+            .app-shell,
+            .topbar,
+            .sidebar,
+            .order-detail-panel,
+            .order-detail-backdrop {
+                display:none !important;
+            }
+
+            #printReport {
+                display:block !important;
+                padding:20px;
+                font-family:Calibri, Arial, sans-serif;
+                color:black;
+                width:100%;
+                box-sizing:border-box;
+                overflow:visible;
+            }
+
+            .report-header {
+                text-align:center;
+                margin-bottom:20px;
+            }
+
+            .report-header h1 {
+                margin-bottom:5px;
+                font-size:24px;
+            }
+
+            .report-summary {
+                margin-bottom:20px;
+            }
+
+            .report-summary table {
+                width:300px;
+                border-collapse:collapse;
+            }
+
+            .report-summary td {
+                padding:5px;
+            }
+
+            .print-table {
+                width:100%;
+                max-width:100%;
+                table-layout:fixed;
+                border-collapse:collapse;
+                font-size:12px;
+            }
+
+            .print-table th,
+            .print-table td {
+                border:1px solid #000;
+                padding:6px;
+                overflow-wrap:break-word;
+                word-break:break-word;
+            }
+
+            .print-table th {
+                background:#f3f3f3;
+            }
+
+            .line-table th:nth-child(1),
+            .line-table td:nth-child(1) {
+                width:11%;
+            }
+
+            .line-table th:nth-child(2),
+            .line-table td:nth-child(2) {
+                width:11%;
+            }
+
+            .line-table th:nth-child(3),
+            .line-table td:nth-child(3) {
+                width:14%;
+            }
+
+            .line-table th:nth-child(4),
+            .line-table td:nth-child(4) {
+                width:48%;
+            }
+
+            .line-table th:nth-child(5),
+            .line-table td:nth-child(5) {
+                width:16%;
+            }
+
+            .group-table,
+            .group-table td,
+            .line-table,
+            .line-table th,
+            .line-table td,
+            .order-group-line td {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .group-row-salesperson td,
+            .group-row-customer td,
+            .order-subtotal-row td {
+                border:1px solid #000;
+            }
+
+            .order-subtotal-row td {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .group-table,
+            tbody.order-group {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            @page {
+                size: landscape;
+                margin: 10mm;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="brand" aria-label="Straight Arrow">
+                <div class="brand-fallback">
+                    <div class="brand-word">Straight Arrow</div>
+                    <div class="brand-line" aria-hidden="true"></div>
+                    <div class="brand-subtitle">Serving our Customers with Tradition, Technology and Trust</div>
+                </div>
+            </div>
+            <div class="topbar-actions">
+                <button
+    id="managerViewBtn"
+    class="icon-btn"
+    type="button"
+    title="View All Orders"
+    aria-label="View All Orders"
+    style="display:none;">
+    <span class="icon">
+        <svg viewBox="0 0 24 24" fill="none">
+            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
+                  stroke="currentColor"
+                  stroke-width="2"/>
+            <circle cx="12" cy="12" r="3"
+                    stroke="currentColor"
+                    stroke-width="2"/>
+        </svg>
+    </span>
+</button>
+                <button id="refreshBtn" class="icon-btn" type="button" title="Refresh dashboard" aria-label="Refresh dashboard">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M20 12a8 8 0 1 1-2.34-5.66" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20 4v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </button>
+                <button id="printBtn" class="action-btn" type="button" title="Print Report">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M7 8V4h10v4M7 17H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 14h10v6H7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          </span>
+          <span>Print</span>
+        </button>
+                <button id="closeBtn" class="action-btn" type="button" title="Close">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M9 6H5v12h4M16 8l4 4-4 4M20 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span>Quit</span>
+        </button>
+            </div>
+        </header>
+
+        <div class="layout">
+            <aside class="sidebar" aria-label="Dashboard navigation">
+                <nav class="nav-list">
+                    <button class="nav-item is-active" type="button" data-scroll-target="dashboardSection">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3V10.5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            </span>
+            Dashboard
+          </button>
+                    <button class="nav-item" type="button" data-scroll-target="ordersSection">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h10l4 4v14H6V3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M15 3v5h5M9 12h6M9 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+            Orders
+          </button>
+                    <button class="nav-item" type="button" data-scroll-target="customersSection">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M16 11a4 4 0 1 0-8 0M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M19 8v6M22 11h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+            Customers
+          </button>
+                    <button class="nav-item" type="button" data-scroll-target="productsSection">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4.5 8 12 12.2 19.5 8M12 21v-8.8" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            </span>
+            Products
+          </button>
+                    <button class="nav-item" type="button" data-scroll-target="chartsSection">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 20V6M10 20V10M16 20V4M22 20H2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </span>
+            Reports
+          </button>
+                </nav>
+
+                <div class="profile-card">
+                    <div id="profileAvatar" class="avatar">SA</div>
+                    <div class="profile-main">
+                        <div id="profileName" class="profile-name">Loading user</div>
+                        <div id="profileMeta" class="profile-meta">Resolving access</div>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="content" id="dashboardSection">
+                <section class="section-heading">
+                    <div>
+                        <div class="eyebrow">Sales order intelligence</div>
+                        <h1>Straight Arrow Order Dashboard</h1>
+                        <div id="dashboardSubtitle" class="subtle">Loading Dataverse records and preparing dashboard metrics.</div>
+                    </div>
+                    <div id="accessPill" class="access-pill">Access pending</div>
+                </section>
+
+                <div class="alert-region">
+                    <div id="noticeBox" class="notice" role="status"></div>
+                    <div id="errorBox" class="error-box" role="alert"></div>
+                </div>
+
+                <section id="kpiGrid" class="kpi-grid" aria-label="Sales KPIs"></section>
+
+                <section class="card filter-bar" aria-label="Dashboard filters">
+                    <div class="filter-title">
+                        <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16l-6 7v5l-4 2v-7L4 5z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            </span> Filters
+                    </div>
+                    <div class="filters">
+                        <div class="field span-3">
+                            <label for="customerFilter">Customer</label>
+                            <select id="customerFilter">
+                <option value="">All customers</option>
+              </select>
+                        </div>
+                        <div class="field span-3">
+                            <label for="salespersonFilter">Salesperson</label>
+                            <select id="salespersonFilter">
+                <option value="">All salespersons</option>
+              </select>
+                        </div>
+                        <div class="field span-3">
+                            <label for="salesOrderSearch">Sales order</label>
+                            <input id="salesOrderSearch" type="search" placeholder="Search sales order no.">
+                        </div>
+                        <div class="field span-3">
+                            <label for="purchaseOrderSearch">Purchase order</label>
+                            <input id="purchaseOrderSearch" type="search" placeholder="Search purchase order no.">
+                        </div>
+                        <div class="field span-3">
+                            <label for="itemSearch">Item search</label>
+                            <input id="itemSearch" type="search" placeholder="Search item no. or description">
+                        </div>
+                        <div class="field span-2">
+                            <label for="startDateFilter">Start date</label>
+                            <input id="startDateFilter" type="date">
+                        </div>
+                        <div class="field span-2">
+                            <label for="endDateFilter">End date</label>
+                            <input id="endDateFilter" type="date">
+                        </div>
+                        <div class="field span-2">
+                            <label for="locationFilter">Location code</label>
+                            <select id="locationFilter">
+                <option value="">All locations</option>
+              </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button id="applyFiltersBtn" class="primary-btn" type="button">Apply</button>
+                            <button id="resetFiltersBtn" class="secondary-btn" type="button">Reset</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="chartsSection" class="chart-grid" aria-label="Sales charts">
+                    <article class="card chart-card">
+                        <div class="card-header">
+                            <div>
+                                <h2>Revenue By Customer</h2>
+                                <div class="subtle">Top 5 customers by order value</div>
+                            </div>
+                        </div>
+                        <div id="customerRevenueChart" class="chart-stage"></div>
+                    </article>
+                    <article class="card chart-card">
+                        <div class="card-header">
+                            <div>
+                                <h2>Revenue By Salesperson</h2>
+                                <div class="subtle">Performance by assigned salesperson</div>
+                            </div>
+                        </div>
+                        <div id="salespersonRevenueChart" class="chart-stage"></div>
+                    </article>
+                    <article class="card chart-card">
+                        <div class="card-header">
+                            <div>
+                                <h2>Monthly Sales Trend</h2>
+                                <div class="subtle">Revenue trend by order month</div>
+                            </div>
+                        </div>
+                        <div id="monthlyTrendChart" class="chart-stage"></div>
+                    </article>
+                    <article class="card chart-card">
+                        <div class="card-header">
+                            <div>
+                                <h2>Top 10 Products</h2>
+                                <div class="subtle">Products ranked by revenue</div>
+                            </div>
+                        </div>
+                        <div id="topProductsChart" class="chart-stage"></div>
+                    </article>
+                </section>
+
+                <section id="customersSection" class="analysis-grid">
+                    <article class="card table-card">
+                        <div class="card-header">
+                            <div>
+                                <h2>Top Customers</h2>
+                                <div class="subtle">All customers for this salesperson — orders, revenue and outstanding amount</div>
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <table aria-label="Top customers">
+                                <thead>
+                                    <tr>
+                                        <th>Customer No</th>
+                                        <th>Customer Name</th>
+                                        <th class="num">Orders</th>
+                                        <th class="num">Revenue</th>
+                                        <th class="num">Average Order Value</th>
+                                        <th class="num">Outstanding Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="topCustomersBody"></tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <article class="card table-card">
+                        <div class="card-header">
+                            <div>
+                                <h2>Salesperson Ranking</h2>
+                                <div class="subtle">Revenue and quantity sold</div>
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <table aria-label="Salesperson ranking">
+                                <thead>
+                                    <tr>
+                                        <th>Salesperson</th>
+                                        <th class="num">Orders</th>
+                                        <th class="num">Revenue</th>
+                                        <th class="num">Quantity Sold</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salespersonRankingBody"></tbody>
+                            </table>
+                        </div>
+                    </article>
+                </section>
+
+                <section id="ordersSection" class="card order-grid-card">
+                    <div class="card-header">
+                        <div>
+                            <h2>Order Grid</h2>
+                            <div class="subtle">Click a row for side details. Use the arrow for inline lines.</div>
+                        </div>
+                    </div>
+                    <div id="orderSummary" class="order-summary"></div>
+                    <div class="order-grid-header" aria-hidden="true">
+                        <div>Order No</div>
+                        <div>Customer</div>
+                        <div>Salesperson</div>
+                        <div>Order Date</div>
+                        <div class="num">Amount</div>
+                        <div>Status</div>
+                        <div></div>
+                    </div>
+                    <div id="orderGrid" class="order-grid"></div>
+                </section>
+
+                <section id="productsSection" class="card table-card">
+                    <div class="card-header">
+                        <div>
+                            <h2>Product Analysis</h2>
+                            <div class="subtle">Quantity sold, revenue and current inventory</div>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table aria-label="Product analysis">
+                            <thead>
+                                <tr>
+                                    <th>Item No</th>
+                                    <th>Description</th>
+                                    <th class="num">Quantity Sold</th>
+                                    <th class="num">Revenue</th>
+                                    <th class="num">Inventory</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productAnalysisBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <footer class="footer">&copy; <span id="footerYear"></span> Straight Arrow. All rights reserved.</footer>
+            </main>
+        </div>
+    </div>
+
+    <div id="reportModal" class="report-modal">
+
+        <div class="report-modal-content">
+
+            <div class="report-modal-header">
+
+            <h2>Report Center</h2>
+
+            <button id="closeReportModal"
+                    class="icon-btn">
+                ✕
+            </button>
+
+        </div>
+
+            <div class="report-layout">
+
+                <div class="report-list">
+
+                    <div class="report-option active"
+                        data-report="executive"
+                        data-manager-only="true">
+
+                        <h3>Executive Summary</h3>
+
+                        <p>High level business overview</p>
+
+                    </div>
+
+                    <div class="report-option"
+                        data-report="openOrdersGrouped">
+
+                        <h3>Open Orders by Sales Person</h3>
+
+                        <p>Grouped by rep, customer and order</p>
+
+                    </div>
+
+                </div>
+
+                <div id="reportPreview"
+                    class="report-preview">
+
+                </div>
+
+            </div>
+
+            <div class="report-footer">
+
+                <button id="printSelectedReport"
+                        class="primary-btn">
+
+                    Print
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay" aria-live="polite" aria-busy="true">
+        <div class="loader-card">
+            <div class="spinner" aria-hidden="true"></div>
+            <div id="loadingText">Loading dashboard</div>
+        </div>
+    </div>
+
+    <div id="orderDetailBackdrop" class="order-detail-backdrop" aria-hidden="true"></div>
+    <aside id="orderDetailPanel" class="order-detail-panel" aria-hidden="true" aria-label="Order details">
+        <div class="detail-header">
+            <button id="orderDetailBackBtn" class="detail-back" type="button" hidden>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m14 6-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="orderDetailBackLabel">Back</span>
+      </button>
+            <div class="detail-title-row">
+                <div class="detail-title">
+                    <span class="detail-label">Selected order</span>
+                    <strong id="orderDetailTitle">No order selected</strong>
+                    <span id="orderDetailMeta" class="subtle">Click an order row to view details.</span>
+                </div>
+                <button id="closeOrderDetailBtn" class="detail-close" type="button" title="Close order details" aria-label="Close order details">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+            </div>
+        </div>
+        <div id="orderDetailBody" class="detail-body"></div>
+    </aside>
+
+    <div id="productDetailBackdrop" class="order-detail-backdrop" aria-hidden="true"></div>
+    <aside id="productDetailPanel" class="order-detail-panel" aria-hidden="true" aria-label="Product details">
+        <div class="detail-header">
+            <button id="productDetailBackBtn" class="detail-back" type="button" hidden>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m14 6-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="productDetailBackLabel">Back</span>
+      </button>
+            <div class="detail-title-row">
+                <div class="detail-title">
+                    <span class="detail-label">Selected product</span>
+                    <strong id="productDetailTitle">No product selected</strong>
+                    <span id="productDetailMeta" class="subtle">Click a product row to view details.</span>
+                </div>
+                <button id="closeProductDetailBtn" class="detail-close" type="button" title="Close product details" aria-label="Close product details">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+            </div>
+        </div>
+        <div id="productDetailBody" class="detail-body"></div>
+    </aside>
+
+    <script>
+        "use strict";
+
+        /* =========================
+           CONFIG
+           ========================= */
+        const CONFIG = {
+            CURRENCY: "USD",
+            LOCALE: "en-US",
+            PAGE_SIZE: 5000,
+            MAX_ORDER_ROWS: 250,
+            PURCHASE_ORDER_FIELDS: ["agt_ponumber", "agt_externaldocumentno"],
+            TABLES: {
+                orders: "agt_bcsalesorderheaders",
+                lines: "agt_bcsalesorderlines",
+                salespersons: "agt_bcsalespersons",
+                userSetup: "agt_bc_usersetup",
+                items: "dyn365bc_item_v2_0",
+                systemUser: "systemuser"
+            },
+            SELECTS: {
+                orders: [
+                    "agt_bcsalesorderheadersid",
+                    "agt_orderno",
+                    "agt_selltocustomerno",
+                    "agt_selltocustomername",
+                    "agt_salespersoncode",
+                    "agt_orderdate",
+                    "agt_amount",
+                    "agt_amountincludingvat",
+                    "agt_status",
+                    "agt_locationcode"
+                ].join(","),
+                lines: [
+                    "agt_documentno",
+                    "agt_lineno",
+                    "agt_itemno",
+                    "agt_description",
+                    "agt_quantity",
+                    "agt_quantityshipped",
+                    "agt_outstandingquantity",
+                    "agt_qtytoinvoice",
+                    "agt_lineamount",
+                    "agt_amount",
+                    "agt_amountincludingvat",
+                    "agt_unitprice",
+                    "agt_linediscountpercent",
+                    "agt_shipmentdate",
+                    "agt_planneddeliverydate"
+                ].join(","),
+                salespersons: "agt_salespersoncode,agt_name,agt_email",
+                userSetup: "agt_user,agt_salespersoncode,agt_ismanager",
+                items: "dyn365bc_number,dyn365bc_displayname,dyn365bc_inventory,dyn365bc_unitprice,dyn365bc_unitcost,dyn365bc_itemcategorycode",
+                systemUser: "systemuserid,fullname,internalemailaddress,domainname"
+            }
+        };
+
+        const state = {
+            selectedReport:"openOrdersGrouped",
+            user: null,
+            access: null,
+            managerViewAll: false,
+            allOrders: [],
+            allLines: [],
+            baseOrders: [],
+            filteredOrders: [],
+            filteredLines: [],
+            lookups: {
+                salespersonsByCode: new Map(),
+                itemsByNo: new Map(),
+                linesByOrder: new Map(),
+                lineSummaryByOrder: new Map()
+            },
+            expandedOrders: new Set(),
+            selectedOrderNo: "",
+            selectedItemNo: "",
+            detailHistory: [],
+            purchaseOrderFieldAvailable: false,
+            purchaseOrderField: "",
+            lastMetrics: null
+        };
+
+        let filterTimer = 0;
+
+        const dom = {};
+
+        const ICONS = {
+            orders: '<svg viewBox="0 0 24 24" fill="none"><path d="M6 3h10l4 4v14H6V3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M15 3v5h5M9 12h6M9 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+            revenue: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M17 7.5c-.7-1.1-2.1-1.8-4-1.8-2.3 0-4 .9-4 2.7 0 4.4 8.5 1.7 8.5 6.5 0 1.9-1.8 3.3-4.7 3.3-2.1 0-3.8-.7-4.8-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+            outstanding: '<svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16v14H4z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M8 9h8M8 13h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+            shipped: '<svg viewBox="0 0 24 24" fill="none"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" stroke="currentColor" stroke-width="2"/></svg>',
+            avg: '<svg viewBox="0 0 24 24" fill="none"><path d="M4 19V5M4 19h16M8 15l3-4 3 2 5-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+            customers: '<svg viewBox="0 0 24 24" fill="none"><path d="M16 11a4 4 0 1 0-8 0M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+            products: '<svg viewBox="0 0 24 24" fill="none"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M4.5 8 12 12.2 19.5 8M12 21v-8.8" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',
+            chevron: '<svg class="icon" viewBox="0 0 24 24" fill="none"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+        };
+
+        const moneyFormatter = new Intl.NumberFormat(CONFIG.LOCALE, {
+            style: "currency",
+            currency: CONFIG.CURRENCY,
+            maximumFractionDigits: 2
+        });
+
+        const compactMoneyFormatter = new Intl.NumberFormat(CONFIG.LOCALE, {
+            style: "currency",
+            currency: CONFIG.CURRENCY,
+            notation: "compact",
+            maximumFractionDigits: 2
+        });
+
+        const numberFormatter = new Intl.NumberFormat(CONFIG.LOCALE, {
+            maximumFractionDigits: 2
+        });
+
+        /* =========================
+           API
+           ========================= */
+        function getXrm() {
+            const xrm = window.parent && window.parent.Xrm ? window.parent.Xrm : window.Xrm;
+            if (!xrm || !xrm.WebApi || !xrm.Utility) {
+                throw new Error("Microsoft Xrm context was not found. Open this file as an HTML web resource inside a model-driven app.");
+            }
+            return xrm;
+        }
+
+        async function getAllRecords(entity, query) {
+            const xrm = getXrm();
+            const entities = [];
+            let options = query && query.trim().startsWith("?") ? query.trim() : "?" + (query || "");
+
+            while (options) {
+                const response = await xrm.WebApi.retrieveMultipleRecords(entity, options, CONFIG.PAGE_SIZE);
+                entities.push.apply(entities, response.entities || []);
+
+                if (response.nextLink) {
+                    const queryIndex = response.nextLink.indexOf("?");
+                    options = queryIndex >= 0 ? response.nextLink.substring(queryIndex) : response.nextLink;
+                } else {
+                    options = null;
+                }
+            }
+
+            return entities;
+        }
+
+        async function getCurrentUser() {
+            const userSettings = getXrm().Utility.getGlobalContext().userSettings;
+            const userId = cleanGuid(userSettings.userId);
+            const userQuery = "?$select=" + CONFIG.SELECTS.systemUser + "&$filter=systemuserid eq " + userId;
+            const records = await getAllRecords(CONFIG.TABLES.systemUser, userQuery);
+            const systemUser = records[0] || {};
+            const email = asText(systemUser.internalemailaddress || systemUser.domainname || "");
+
+            return {
+                id: userId,
+                name: asText(systemUser.fullname || userSettings.userName || "Current User"),
+                email: email,
+                domainName: asText(systemUser.domainname || ""),
+                initials: getInitials(systemUser.fullname || userSettings.userName || "SA")
+            };
+        }
+
+        async function loadDashboardData() {
+            setLoading(true, "Resolving current user");
+            clearMessages();
+            state.expandedOrders.clear();
+            closeOrderDetail(false);
+            closeProductDetail();
+
+            try {
+                state.user = await getCurrentUser();
+                setLoading(true, "Reading user access");
+
+                const userSetupRows = await getAllRecords(
+                    CONFIG.TABLES.userSetup,
+                    "?$select=" + CONFIG.SELECTS.userSetup
+                );
+                state.access = resolveAccess(state.user, userSetupRows);
+                renderUserProfile();
+                //sreenivas
+                // if (state.access.isManager) {
+                //     dom.managerViewBtn.style.display = "inline-flex";
+                // }
+                if (state.access.isManager) {
+
+                    state.baseOrders = state.allOrders.filter(function(order) {
+                        return normalizeCode(order.salespersonCode) ===
+                            normalizeCode(state.access.salespersonCode);
+                    });
+
+                }
+                setLoading(true, "Loading orders, lines, salespersons and items");
+                const queryLines = "?$select=" + CONFIG.SELECTS.lines;
+                const querySalespersons = "?$select=" + CONFIG.SELECTS.salespersons;
+                const queryItems = "?$select=" + CONFIG.SELECTS.items;
+
+                const results = await Promise.all([
+                    getOrderRecords(),
+                    getAllRecords(CONFIG.TABLES.lines, queryLines),
+                    getAllRecords(CONFIG.TABLES.salespersons, querySalespersons),
+                    getAllRecords(CONFIG.TABLES.items, queryItems)
+                ]);
+
+                setLoading(true, "Building dashboard");
+                prepareData(results[0], results[1], results[2], results[3]);
+                if (state.access.isManager) {
+
+                dom.managerViewBtn.style.display = "inline-flex";
+
+                state.baseOrders = state.allOrders.filter(function(order) {
+                    return normalizeCode(order.salespersonCode) ===
+                        normalizeCode(state.access.salespersonCode);
+                });
+
+            }
+                populateFilters();
+                if (state.access.salespersonCode) {
+                    dom.salespersonFilter.value =
+                        state.access.salespersonCode;
+                }
+                applyFilters();
+                showAccessNotice();
+            } catch (error) {
+                showError(error);
+                renderEmptyDashboard();
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function getOrderRecords() {
+            const baseQuery = buildOrderQuery(null);
+            const candidates = (CONFIG.PURCHASE_ORDER_FIELDS || []).map(function(field) {
+                return asText(field).trim();
+            }).filter(Boolean);
+
+            if (!candidates.length) {
+                state.purchaseOrderFieldAvailable = false;
+                state.purchaseOrderField = "";
+                return getAllRecords(CONFIG.TABLES.orders, baseQuery);
+            }
+
+            for (let i = 0; i < candidates.length; i++) {
+                const field = candidates[i];
+                try {
+                    const rows = await getAllRecords(CONFIG.TABLES.orders, buildOrderQuery(field));
+                    state.purchaseOrderFieldAvailable = true;
+                    state.purchaseOrderField = field;
+                    return rows;
+                } catch (error) {
+                    console.warn("Purchase order field \"" + field + "\" was not available. Trying next candidate.", error);
+                }
+            }
+
+            state.purchaseOrderFieldAvailable = false;
+            state.purchaseOrderField = "";
+            return getAllRecords(CONFIG.TABLES.orders, baseQuery);
+        }
+
+        function buildOrderQuery(purchaseOrderField) {
+            const fields = CONFIG.SELECTS.orders.split(",");
+            const field = asText(purchaseOrderField).trim();
+            if (field && fields.indexOf(field) < 0) {
+                fields.push(field);
+            }
+            return "?$select=" + fields.join(",") + "&$orderby=agt_orderdate desc";
+        }
+
+        /* =========================
+           DATA PROCESSING
+           ========================= */
+        function prepareData(orderRows, lineRows, salespersonRows, itemRows) {
+            state.lookups.salespersonsByCode = buildSalespersonLookup(salespersonRows);
+            state.lookups.itemsByNo = buildItemLookup(itemRows);
+            state.allLines = normalizeLines(lineRows);
+            state.lookups.linesByOrder = groupBy(state.allLines, "documentNo");
+            state.lookups.lineSummaryByOrder = buildLineSummaries(state.allLines);
+            state.allOrders = normalizeOrders(orderRows);
+
+           if (state.access.isManager) {
+
+            const managerCode =
+                normalizeCode(state.access.salespersonCode);
+
+            state.baseOrders = state.allOrders.filter(function(order) {
+                return normalizeCode(order.salespersonCode) === managerCode;
+            });
+
+            } else if (state.access.salespersonCode) {
+                const accessCode = normalizeCode(state.access.salespersonCode);
+                state.baseOrders = state.allOrders.filter(function(order) {
+                    return normalizeCode(order.salespersonCode) === accessCode;
+                });
+            } else {
+                state.baseOrders = [];
+            }
+        }
+
+        function buildSalespersonLookup(rows) {
+            const lookup = new Map();
+            rows.forEach(function(row) {
+                const code = asText(row.agt_salespersoncode).trim();
+                if (!code) {
+                    return;
+                }
+                lookup.set(normalizeCode(code), {
+                    code: code,
+                    name: asText(row.agt_name || code),
+                    email: asText(row.agt_email)
+                });
+            });
+            return lookup;
+        }
+
+        function buildItemLookup(rows) {
+            const lookup = new Map();
+            rows.forEach(function(row) {
+                const number = asText(row.dyn365bc_number).trim();
+                if (!number) {
+                    return;
+                }
+                lookup.set(normalizeCode(number), {
+                    number: number,
+                    displayName: asText(row.dyn365bc_displayname || number),
+                    inventory: toNumber(row.dyn365bc_inventory),
+                    unitPrice: toNumber(row.dyn365bc_unitprice),
+                    unitCost: toNumber(row.dyn365bc_unitcost),
+                    category: asText(row.dyn365bc_itemcategorycode)
+                });
+            });
+            return lookup;
+        }
+
+        function normalizeOrders(rows) {
+            return rows.map(function(row) {
+                const salespersonCode = asText(row.agt_salespersoncode).trim();
+                const salesperson = state.lookups.salespersonsByCode.get(normalizeCode(salespersonCode));
+                //const documentNo = asText(row.agt_documentno).trim(); //sreenivas
+                const documentNo = asText(row.agt_orderno).trim();
+                const lineSummary = state.lookups.lineSummaryByOrder.get(documentNo) || emptyLineSummary();
+                const amount = toNumber(row.agt_amount);
+                const amountIncludingVat = toNumber(row.agt_amountincludingvat);
+                console.log(row);//sreenivas
+                console.log("Order No:", row.agt_orderno);//sreenivas
+                console.log("Document No:", row.agt_documentno);//sreenivas
+                console.log("Location:", row.agt_locationcode); //sreenivas
+
+                return {
+                    //id: asText(row.agt_bcsalesorderid), //sreenivas
+                    id: asText(row.agt_bcsalesorderheadersid),
+                    documentNo: documentNo,
+                    purchaseOrderNo: getPurchaseOrderNo(row),
+                    customerNo: asText(row.agt_selltocustomerno).trim(),
+                    customerName: asText(row.agt_selltocustomername || "Unknown customer"),
+                    salespersonCode: salespersonCode,
+                    salespersonName: salesperson ? salesperson.name : salespersonCode || "Unassigned",
+                    orderDateRaw: row.agt_orderdate,
+                    orderDate: parseDate(row.agt_orderdate),
+                    amount: amount,
+                    amountIncludingVat: amountIncludingVat,
+                    revenue: amountIncludingVat || amount || lineSummary.revenue,
+                    statusRaw: row.agt_status,
+                    status: asText(getFormattedValue(row, "agt_status") || row.agt_status || "Unknown"),
+                    locationCode: asText(row.agt_locationcode).trim(),
+                    lineSummary: lineSummary
+                };
+            });
+        }
+
+        function normalizeLines(rows) {
+            return rows.map(function(row) {
+                const documentNo = asText(row.agt_documentno).trim();
+                const itemNo = asText(row.agt_itemno).trim();
+                const item = state.lookups.itemsByNo.get(normalizeCode(itemNo));
+                const quantity = toNumber(row.agt_quantity);
+                const shippedQty = toNumber(row.agt_quantityshipped);
+                const outstandingQty = toNumber(row.agt_outstandingquantity);
+                const unitPrice = toNumber(row.agt_unitprice);
+                const lineAmount = toNumber(
+                    row.agt_amountincludingvat !== null && row.agt_amountincludingvat !== undefined ?
+                    row.agt_amountincludingvat :
+                    row.agt_lineamount !== null && row.agt_lineamount !== undefined ?
+                    row.agt_lineamount :
+                    row.agt_amount
+                );
+
+                return {
+                    documentNo: documentNo,
+                    lineNo: asText(row.agt_lineno),
+                    itemNo: itemNo,
+                    description: asText(row.agt_description || (item ? item.displayName : "")),
+                    quantity: quantity,
+                    shippedQty: shippedQty,
+                    outstandingQty: outstandingQty,
+                    qtyToInvoice: toNumber(row.agt_qtytoinvoice),
+                    unitPrice: unitPrice,
+                    lineAmount: lineAmount || quantity * unitPrice,
+                    discountPercent: toNumber(row.agt_linediscountpercent),
+                    shipmentDate: parseDate(row.agt_shipmentdate),
+                    plannedDeliveryDate: parseDate(row.agt_planneddeliverydate),
+                    inventory: item ? item.inventory : 0
+                };
+            });
+        }
+
+        function buildLineSummaries(lines) {
+            const summaries = new Map();
+            lines.forEach(function(line) {
+                const current = summaries.get(line.documentNo) || emptyLineSummary();
+                current.quantity += line.quantity;
+                current.shippedQty += line.shippedQty;
+                current.outstandingQty += line.outstandingQty;
+                current.outstandingAmount += line.outstandingQty * line.unitPrice;
+                current.revenue += line.lineAmount;
+                current.itemCount += line.itemNo ? 1 : 0;
+                summaries.set(line.documentNo, current);
+            });
+            return summaries;
+        }
+
+        function emptyLineSummary() {
+            return {
+                quantity: 0,
+                shippedQty: 0,
+                outstandingQty: 0,
+                outstandingAmount: 0,
+                revenue: 0,
+                itemCount: 0
+            };
+        }
+
+        function resolveAccess(user, userSetupRows) {
+            const candidates = getUserCandidates(user);
+            let matched = userSetupRows.find(function(row) {
+                return candidates.has(normalizeUserKey(row.agt_user));
+            });
+
+            if (!matched) {
+                matched = userSetupRows.find(function(row) {
+                    const setupUser = normalizeUserKey(row.agt_user);
+                    return Array.from(candidates).some(function(candidate) {
+                        return candidate && candidate.length > 3 && setupUser.indexOf(candidate) >= 0;
+                    });
+                });
+            }
+
+            const isManager = matched ? toBoolean(matched.agt_ismanager, getFormattedValue(matched, "agt_ismanager")) : false;
+            const salespersonCode = matched ? asText(matched.agt_salespersoncode).trim() : "";
+
+            return {
+                isManager: isManager,
+                salespersonCode: salespersonCode,
+                setupFound: Boolean(matched),
+                accessLabel: isManager ? "Manager access" : salespersonCode ? "Salesperson access" : "No salesperson mapping"
+            };
+        }
+
+        function getUserCandidates(user) {
+            const keys = new Set();
+            [user.email, user.domainName, user.id].forEach(function(value) {
+                const key = normalizeUserKey(value);
+                if (key) {
+                    keys.add(key);
+                }
+            });
+
+            if (user.email && user.email.indexOf("@") > 0) {
+                keys.add(normalizeUserKey(user.email.split("@")[0]));
+            }
+
+            if (user.domainName && user.domainName.indexOf("\\") > 0) {
+                keys.add(normalizeUserKey(user.domainName.split("\\").pop()));
+            }
+
+            return keys;
+        }
+
+        function buildMetrics(orders, lines) {
+            const documentSet = new Set(orders.map(function(order) {
+                return order.documentNo;
+            }));
+            const customerMap = new Map();
+            const salespersonMap = new Map();
+            const productMap = new Map();
+            const monthlyMap = new Map();
+            const orderLineSummary = new Map();
+
+            lines.forEach(function(line) {
+                if (!documentSet.has(line.documentNo)) {
+                    return;
+                }
+                const summary = orderLineSummary.get(line.documentNo) || emptyLineSummary();
+                summary.quantity += line.quantity;
+                summary.shippedQty += line.shippedQty;
+                summary.outstandingQty += line.outstandingQty;
+                summary.outstandingAmount += line.outstandingQty * line.unitPrice;
+                summary.revenue += line.lineAmount;
+                summary.itemCount += line.itemNo ? 1 : 0;
+                orderLineSummary.set(line.documentNo, summary);
+
+                const productKey = line.itemNo || "(blank)";
+                const product = productMap.get(productKey) || {
+                    itemNo: productKey,
+                    description: line.description || productKey,
+                    quantitySold: 0,
+                    revenue: 0,
+                    inventory: line.inventory
+                };
+                product.quantitySold += line.quantity;
+                product.revenue += line.lineAmount;
+                product.inventory = line.inventory;
+                productMap.set(productKey, product);
+            });
+
+            orders.forEach(function(order) {
+                const lineSummary = orderLineSummary.get(order.documentNo) || order.lineSummary || emptyLineSummary();
+                const customerKey = order.customerNo || order.customerName || "(blank)";
+                const customer = customerMap.get(customerKey) || {
+                    customerNo: order.customerNo || "(blank)",
+                    customerName: order.customerName || "Unknown customer",
+                    orders: 0,
+                    revenue: 0,
+                    outstandingAmount: 0
+                };
+                customer.orders += 1;
+                customer.revenue += order.revenue;
+                customer.outstandingAmount += lineSummary.outstandingAmount;
+                customerMap.set(customerKey, customer);
+
+                const salespersonKey = order.salespersonCode || "Unassigned";
+                const salesperson = salespersonMap.get(salespersonKey) || {
+                    salesperson: order.salespersonName || salespersonKey,
+                    code: salespersonKey,
+                    orders: 0,
+                    revenue: 0,
+                    quantitySold: 0
+                };
+                salesperson.orders += 1;
+                salesperson.revenue += order.revenue;
+                salesperson.quantitySold += lineSummary.quantity;
+                salespersonMap.set(salespersonKey, salesperson);
+
+                const monthKey = getMonthKey(order.orderDate);
+                if (monthKey) {
+                    const month = monthlyMap.get(monthKey) || {
+                        key: monthKey,
+                        label: getMonthLabel(order.orderDate),
+                        revenue: 0,
+                        orders: 0
+                    };
+                    month.revenue += order.revenue;
+                    month.orders += 1;
+                    monthlyMap.set(monthKey, month);
+                }
+            });
+
+            const totals = orders.reduce(function(total, order) {
+                const summary = orderLineSummary.get(order.documentNo) || order.lineSummary || emptyLineSummary();
+                total.revenue += order.revenue;
+                total.outstandingAmount += summary.outstandingAmount;
+                total.shippedQty += summary.shippedQty;
+                total.outstandingQty += summary.outstandingQty;
+                total.itemsSold += summary.quantity;
+                return total;
+            }, {
+                revenue: 0,
+                outstandingAmount: 0,
+                shippedQty: 0,
+                outstandingQty: 0,
+                itemsSold: 0
+            });
+
+            return {
+                totalOrders: orders.length,
+                totalRevenue: totals.revenue,
+                totalOutstandingAmount: totals.outstandingAmount,
+                totalShippedQty: totals.shippedQty,
+                totalOutstandingQty: totals.outstandingQty,
+                averageOrderValue: orders.length ? totals.revenue / orders.length : 0,
+                totalCustomers: customerMap.size,
+                totalItemsSold: totals.itemsSold,
+                customers: Array.from(customerMap.values()).map(function(customer) {
+                    return Object.assign({}, customer, {
+                        averageOrderValue: customer.orders ? customer.revenue / customer.orders : 0
+                    });
+                }).sort(sortByRevenue),
+                salespersons: Array.from(salespersonMap.values()).sort(sortByRevenue),
+                products: Array.from(productMap.values()).sort(sortByRevenue),
+                months: Array.from(monthlyMap.values()).sort(function(a, b) {
+                    return a.key.localeCompare(b.key);
+                })
+            };
+        }
+
+        /* =========================
+           FILTERS
+           ========================= */
+        function populateFilters() {
+            populateSelect(dom.customerFilter, uniqueOptions(state.baseOrders, function(order) {
+                return {
+                    value: order.customerNo,
+                    label: order.customerName + (order.customerNo ? " (" + order.customerNo + ")" : "")
+                };
+            }), "All customers");
+
+            populateSelect(dom.salespersonFilter, uniqueOptions(
+    state.access.isManager
+        ? state.allOrders
+        : state.baseOrders, function(order) {
+                return {
+                    value: order.salespersonCode,
+                    label: order.salespersonName + (order.salespersonCode ? " (" + order.salespersonCode + ")" : "")
+                };
+            }), "All salespersons");
+
+            populateSelect(dom.locationFilter, uniqueOptions(state.baseOrders, function(order) {
+                return {
+                    value: order.locationCode,
+                    label: order.locationCode || "(blank)"
+                };
+            }), "All locations");
+
+            if (state.access.salespersonCode) {
+                dom.salespersonFilter.value = state.access.salespersonCode;
+            }
+
+            dom.purchaseOrderSearch.disabled = !state.purchaseOrderFieldAvailable;
+            dom.purchaseOrderSearch.placeholder = state.purchaseOrderFieldAvailable ?
+                "Search purchase order no." :
+                "Purchase order field not available";
+        }
+
+        function applyFilters() {
+            const filters = getFilterValues();
+            const matchingDocsForItem = getMatchingDocumentsForItem(filters.itemSearch);
+
+            //const filtered = state.baseOrders.filter(function(order) {
+            const sourceOrders =
+                state.access.isManager &&
+                state.managerViewAll
+                    ? state.allOrders
+                    : state.baseOrders;
+
+            const filtered = sourceOrders.filter(function(order) {
+                if (filters.customer && order.customerNo !== filters.customer) {
+                    return false;
+                }
+                if (filters.salesperson && order.salespersonCode !== filters.salesperson) {
+                    return false;
+                }
+                if (filters.location && order.locationCode !== filters.location) {
+                    return false;
+                }
+                if (filters.startDate && (!order.orderDate || order.orderDate < filters.startDate)) {
+                    return false;
+                }
+                if (filters.endDate && (!order.orderDate || order.orderDate > filters.endDate)) {
+                    return false;
+                }
+                if (filters.salesOrderSearch && normalizeSearch(order.documentNo).indexOf(filters.salesOrderSearch) < 0) {
+                    return false;
+                }
+                if (filters.purchaseOrderSearch && normalizeSearch(order.purchaseOrderNo).indexOf(filters.purchaseOrderSearch) < 0) {
+                    return false;
+                }
+                if (filters.itemSearch && !matchingDocsForItem.has(order.documentNo)) {
+                    return false;
+                }
+                return true;
+            });
+
+            const documentSet = new Set(filtered.map(function(order) {
+                return order.documentNo;
+            }));
+
+            state.filteredOrders = filtered;
+            state.filteredLines = state.allLines.filter(function(line) {
+                return documentSet.has(line.documentNo);
+            });
+            if (state.selectedOrderNo && !documentSet.has(state.selectedOrderNo)) {
+                closeOrderDetail(false);
+            }
+            if (state.selectedItemNo && !state.filteredLines.some(function(line) {
+                    return line.itemNo === state.selectedItemNo;
+                })) {
+                closeProductDetail();
+            }
+            renderDashboard(filters);
+        }
+
+        function resetFilters() {
+            dom.customerFilter.value = "";
+            dom.salespersonFilter.value = !state.access.isManager && state.access.salespersonCode ? state.access.salespersonCode : "";
+            dom.salesOrderSearch.value = "";
+            dom.purchaseOrderSearch.value = "";
+            dom.itemSearch.value = "";
+            dom.startDateFilter.value = "";
+            dom.endDateFilter.value = "";
+            dom.locationFilter.value = "";
+            state.expandedOrders.clear();
+            state.selectedOrderNo = "";
+            closeOrderDetail(false);
+            closeProductDetail();
+            applyFilters();
+        }
+
+        //sreenivas
+        function toggleManagerView() {
+
+            state.managerViewAll = !state.managerViewAll;
+
+            if (state.managerViewAll) {
+
+                dom.salespersonFilter.value = "";
+
+                dom.managerViewBtn.title =
+                    "Showing All Salespersons";
+
+            } else {
+
+                dom.salespersonFilter.value =
+                    state.access.salespersonCode;
+
+                dom.managerViewBtn.title =
+                    "Showing My Orders";
+            }
+
+            dom.managerViewBtn.classList.toggle(
+                "active",
+                state.managerViewAll
+            );
+
+            applyFilters();
+        }
+
+        function getFilterValues() {
+            return {
+                customer: dom.customerFilter.value,
+                salesperson: dom.salespersonFilter.value,
+                salesOrderSearch: normalizeSearch(dom.salesOrderSearch.value),
+                purchaseOrderSearch: state.purchaseOrderFieldAvailable ? normalizeSearch(dom.purchaseOrderSearch.value) : "",
+                itemSearch: normalizeSearch(dom.itemSearch.value),
+                startDate: dom.startDateFilter.value ? parseDate(dom.startDateFilter.value) : null,
+                endDate: dom.endDateFilter.value ? endOfDay(parseDate(dom.endDateFilter.value)) : null,
+                location: dom.locationFilter.value
+            };
+        }
+
+        function getMatchingDocumentsForItem(itemSearch) {
+            const docs = new Set();
+            if (!itemSearch) {
+                return docs;
+            }
+            state.allLines.forEach(function(line) {
+                const text = normalizeSearch([line.itemNo, line.description].join(" "));
+                if (text.indexOf(itemSearch) >= 0) {
+                    docs.add(line.documentNo);
+                }
+            });
+            return docs;
+        }
+
+        /* =========================
+           CHARTS
+           ========================= */
+        function renderHorizontalBarChart(container, rows, options) {
+            if (!rows.length) {
+                renderEmpty(container, "No chart data is available for the selected filters.");
+                return;
+            }
+
+            const width = 680;
+            const rowHeight = 42;
+            const top = 22;
+            const left = 190;
+            const right = 126;
+            const barMax = width - left - right;
+            const height = top + rows.length * rowHeight + 22;
+            const maxValue = Math.max.apply(null, rows.map(function(row) {
+                return row.value;
+            })) || 1;
+
+            const bars = rows.map(function(row, index) {
+                const y = top + index * rowHeight;
+                const barWidth = Math.max(2, (row.value / maxValue) * barMax);
+                const label = truncate(row.label, 27);
+                const valueLabel = options && options.money ? compactMoney(row.value) : formatNumber(row.value);
+
+                return [
+                    '<g>',
+                    '<title>' + escapeHtml(row.label + ": " + valueLabel) + '</title>',
+                    '<text class="chart-label" x="0" y="' + (y + 20) + '">' + escapeHtml(label) + '</text>',
+                    '<rect class="chart-bar' + (index % 2 ? " alt" : "") + '" x="' + left + '" y="' + (y + 4) + '" width="' + barWidth.toFixed(2) + '" height="22" rx="7"></rect>',
+                    '<text class="chart-value" x="' + (left + barWidth + 10) + '" y="' + (y + 21) + '">' + escapeHtml(valueLabel) + '</text>',
+                    '</g>'
+                ].join("");
+            }).join("");
+
+            container.innerHTML = '<svg viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-label="' + escapeHtml(options.title) + '">' + bars + '</svg>';
+        }
+
+        function renderVerticalBarChart(container, rows, options) {
+            if (!rows.length) {
+                renderEmpty(container, "No chart data is available for the selected filters.");
+                return;
+            }
+
+            const width = 680;
+            const height = 310;
+            const left = 54;
+            const right = 22;
+            const top = 30;
+            const bottom = 70;
+            const chartWidth = width - left - right;
+            const chartHeight = height - top - bottom;
+            const maxValue = Math.max.apply(null, rows.map(function(row) {
+                return row.value;
+            })) || 1;
+            const step = chartWidth / rows.length;
+            const barWidth = Math.max(18, Math.min(48, step * 0.55));
+            const gridLines = [0, 0.25, 0.5, 0.75, 1].map(function(ratio) {
+                const y = top + chartHeight - ratio * chartHeight;
+                return '<line class="chart-grid-line" x1="' + left + '" y1="' + y + '" x2="' + (width - right) + '" y2="' + y + '"></line>';
+            }).join("");
+
+            const bars = rows.map(function(row, index) {
+                const barHeight = (row.value / maxValue) * chartHeight;
+                const x = left + index * step + (step - barWidth) / 2;
+                const y = top + chartHeight - barHeight;
+                const label = truncate(row.label, 10);
+                const valueLabel = options && options.money ? compactMoney(row.value) : formatNumber(row.value);
+                return [
+                    '<g>',
+                    '<title>' + escapeHtml(row.label + ": " + valueLabel) + '</title>',
+                    '<rect class="chart-bar' + (index % 2 ? " alt" : "") + '" x="' + x.toFixed(2) + '" y="' + y.toFixed(2) + '" width="' + barWidth.toFixed(2) + '" height="' + Math.max(2, barHeight).toFixed(2) + '" rx="7"></rect>',
+                    '<text class="chart-value" text-anchor="middle" x="' + (x + barWidth / 2).toFixed(2) + '" y="' + (y - 8).toFixed(2) + '">' + escapeHtml(valueLabel) + '</text>',
+                    '<text class="chart-label" text-anchor="middle" x="' + (x + barWidth / 2).toFixed(2) + '" y="' + (height - 36) + '">' + escapeHtml(label) + '</text>',
+                    '</g>'
+                ].join("");
+            }).join("");
+
+            container.innerHTML = [
+                '<svg viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-label="' + escapeHtml(options.title) + '">',
+                gridLines,
+                '<line class="chart-axis" x1="' + left + '" y1="' + (top + chartHeight) + '" x2="' + (width - right) + '" y2="' + (top + chartHeight) + '"></line>',
+                bars,
+                '</svg>'
+            ].join("");
+        }
+
+        function renderLineChart(container, rows) {
+            if (!rows.length) {
+                renderEmpty(container, "No monthly sales data is available for the selected filters.");
+                return;
+            }
+
+            const width = 680;
+            const height = 310;
+            const left = 54;
+            const right = 28;
+            const top = 30;
+            const bottom = 58;
+            const chartWidth = width - left - right;
+            const chartHeight = height - top - bottom;
+            const maxValue = Math.max.apply(null, rows.map(function(row) {
+                return row.revenue;
+            })) || 1;
+            const step = rows.length > 1 ? chartWidth / (rows.length - 1) : 0;
+
+            const points = rows.map(function(row, index) {
+                const x = rows.length > 1 ? left + index * step : left + chartWidth / 2;
+                const y = top + chartHeight - (row.revenue / maxValue) * chartHeight;
+                return {
+                    x: x,
+                    y: y,
+                    label: row.label,
+                    value: row.revenue
+                };
+            });
+
+            const path = points.map(function(point, index) {
+                return (index ? "L" : "M") + point.x.toFixed(2) + " " + point.y.toFixed(2);
+            }).join(" ");
+
+            const gridLines = [0, 0.25, 0.5, 0.75, 1].map(function(ratio) {
+                const y = top + chartHeight - ratio * chartHeight;
+                return '<line class="chart-grid-line" x1="' + left + '" y1="' + y + '" x2="' + (width - right) + '" y2="' + y + '"></line>';
+            }).join("");
+
+            const dots = points.map(function(point, index) {
+                const label = rows[index].label + ": " + compactMoney(point.value);
+                return [
+                    '<g>',
+                    '<title>' + escapeHtml(label) + '</title>',
+                    '<circle class="chart-dot" cx="' + point.x.toFixed(2) + '" cy="' + point.y.toFixed(2) + '" r="6"></circle>',
+                    '<text class="chart-label" text-anchor="middle" x="' + point.x.toFixed(2) + '" y="' + (height - 26) + '">' + escapeHtml(truncate(point.label, 9)) + '</text>',
+                    '</g>'
+                ].join("");
+            }).join("");
+
+            container.innerHTML = [
+                '<svg viewBox="0 0 ' + width + ' ' + height + '" role="img" aria-label="Monthly sales trend">',
+                gridLines,
+                '<line class="chart-axis" x1="' + left + '" y1="' + (top + chartHeight) + '" x2="' + (width - right) + '" y2="' + (top + chartHeight) + '"></line>',
+                '<path class="chart-line" d="' + path + '"></path>',
+                dots,
+                '</svg>'
+            ].join("");
+        }
+
+        /* =========================
+           GRID
+           ========================= */
+        function renderOrderGrid(filters) {
+            const visibleOrders = state.filteredOrders.slice(0, CONFIG.MAX_ORDER_ROWS);
+            const hiddenCount = Math.max(0, state.filteredOrders.length - visibleOrders.length);
+            dom.orderSummary.textContent = "Showing " + formatNumber(visibleOrders.length) + " of " + formatNumber(state.filteredOrders.length) + " filtered orders" + (hiddenCount ? ". Narrow filters to view the remaining " + formatNumber(hiddenCount) + "." : ".");
+
+            if (!visibleOrders.length) {
+                renderEmpty(dom.orderGrid, "No orders match the current filters.");
+                return;
+            }
+
+            dom.orderGrid.innerHTML = visibleOrders.map(function(order) {
+                const expanded = state.expandedOrders.has(order.documentNo);
+                const selected = state.selectedOrderNo === order.documentNo;
+                const statusClass = getStatusClass(order.status);
+                const linesMarkup = expanded ? renderOrderLines(order, filters) : "";
+                const orderSubtext = order.purchaseOrderNo ? "PO " + order.purchaseOrderNo : order.locationCode || "No location";
+                return [
+                    '<div class="order-row' + (expanded ? " is-expanded" : "") + (selected ? " is-selected" : "") + '" data-open-order="' + escapeAttr(order.documentNo) + '" role="button" tabindex="0" aria-label="Open order ' + escapeAttr(order.documentNo) + ' details">',
+                    '<div class="order-cell" data-label="Order No"><strong>' + highlight(order.documentNo, filters.salesOrderSearch) + '</strong><span class="order-subtext">' + highlight(orderSubtext, filters.purchaseOrderSearch) + '</span></div>',
+                    '<div class="order-cell" data-label="Customer">' + escapeHtml(order.customerName) + '<span class="order-subtext">' + escapeHtml(order.customerNo) + '</span></div>',
+                    '<div class="order-cell" data-label="Salesperson">' + escapeHtml(order.salespersonName) + '<span class="order-subtext">' + escapeHtml(order.salespersonCode || "Unassigned") + '</span></div>',
+                    '<div class="order-cell" data-label="Order Date">' + escapeHtml(formatDate(order.orderDate)) + '</div>',
+                    '<div class="order-cell num" data-label="Amount">' + escapeHtml(formatMoney(order.revenue)) + '</div>',
+                    '<div class="order-cell" data-label="Status"><span class="status-pill ' + statusClass + '">' + escapeHtml(order.status) + '</span></div>',
+                    '<button class="expand-btn" type="button" data-expand-order="' + escapeAttr(order.documentNo) + '" aria-expanded="' + String(expanded) + '" aria-label="' + (expanded ? "Collapse" : "Expand") + ' order ' + escapeAttr(order.documentNo) + '">' + ICONS.chevron + '</button>',
+                    '</div>',
+                    linesMarkup
+                ].join("");
+            }).join("");
+        }
+
+        function renderOrderLines(order, filters) {
+            const lines = state.lookups.linesByOrder.get(order.documentNo) || [];
+            if (!lines.length) {
+                return '<div class="line-panel"><div class="empty-state"><strong>No lines found</strong>Dataverse returned no line records for this order.</div></div>';
+            }
+
+            const body = lines.map(function(line) {
+                return [
+                    '<tr>',
+                    '<td>' + escapeHtml(line.lineNo) + '</td>',
+                    '<td>' + highlight(line.itemNo, filters.itemSearch) + '</td>',
+                    '<td>' + highlight(line.description, filters.itemSearch) + '</td>',
+                    '<td class="num">' + escapeHtml(formatNumber(line.quantity)) + '</td>',
+                    '<td class="num">' + escapeHtml(formatNumber(line.shippedQty)) + '</td>',
+                    '<td class="num">' + escapeHtml(formatNumber(line.outstandingQty)) + '</td>',
+                    '<td class="num">' + escapeHtml(formatMoney(line.unitPrice)) + '</td>',
+                    '<td class="num">' + escapeHtml(formatMoney(line.lineAmount)) + '</td>',
+                    '</tr>'
+                ].join("");
+            }).join("");
+
+            return [
+                '<div class="line-panel">',
+                '<table aria-label="Order lines for ' + escapeAttr(order.documentNo) + '">',
+                '<thead><tr><th>Line No</th><th>Item No</th><th>Description</th><th class="num">Quantity</th><th class="num">Shipped Qty</th><th class="num">Outstanding Qty</th><th class="num">Unit Price</th><th class="num">Line Amount</th></tr></thead>',
+                '<tbody>',
+                body,
+                '</tbody></table></div>'
+            ].join("");
+        }
+
+        function openOrderDetail(documentNo, options) {
+            const order = findOrderByDocumentNo(documentNo);
+            if (!order) {
+                return;
+            }
+
+            const pushFrom = options && options.pushFrom;
+            if (pushFrom) {
+                state.detailHistory.push(pushFrom);
+            } else {
+                state.detailHistory = [];
+            }
+
+            if (dom.productDetailPanel.classList.contains("is-open")) {
+                dom.productDetailBackdrop.classList.remove("is-open");
+                dom.productDetailPanel.classList.remove("is-open");
+                dom.productDetailBackdrop.setAttribute("aria-hidden", "true");
+                dom.productDetailPanel.setAttribute("aria-hidden", "true");
+            }
+
+            state.selectedOrderNo = order.documentNo;
+            renderOrderDetail(order, getFilterValues());
+            dom.orderDetailBackdrop.classList.add("is-open");
+            dom.orderDetailPanel.classList.add("is-open");
+            dom.orderDetailBackdrop.setAttribute("aria-hidden", "false");
+            dom.orderDetailPanel.setAttribute("aria-hidden", "false");
+            renderOrderGrid(getFilterValues());
+        }
+
+        function closeOrderDetail(refreshGrid) {
+            state.selectedOrderNo = "";
+            state.detailHistory = [];
+            if (!dom.orderDetailBackdrop || !dom.orderDetailPanel) {
+                return;
+            }
+            dom.orderDetailBackdrop.classList.remove("is-open");
+            dom.orderDetailPanel.classList.remove("is-open");
+            dom.orderDetailBackdrop.setAttribute("aria-hidden", "true");
+            dom.orderDetailPanel.setAttribute("aria-hidden", "true");
+            if (refreshGrid !== false) {
+                renderOrderGrid(getFilterValues());
+            }
+        }
+
+        function renderOrderDetail(order, filters) {
+            const lines = state.lookups.linesByOrder.get(order.documentNo) || [];
+            const summary = order.lineSummary || emptyLineSummary();
+            dom.orderDetailTitle.textContent = "Sales Order " + order.documentNo;
+            dom.orderDetailMeta.textContent = order.customerName + " | " + formatDate(order.orderDate);
+            updateBackButton(dom.orderDetailBackBtn, dom.orderDetailBackLabel);
+
+            const lineMarkup = lines.length ?
+                lines.map(function(line) {
+                    const clickable = Boolean(line.itemNo);
+                    return [
+                        '<article class="detail-line' + (clickable ? " detail-line-clickable" : "") + '"' + (clickable ? ' data-open-product="' + escapeAttr(line.itemNo) + '" role="button" tabindex="0" aria-label="Open product ' + escapeAttr(line.itemNo) + ' details"' : "") + '>',
+                        '<div class="detail-line-top">',
+                        '<div>',
+                        '<div class="detail-line-desc">' + highlight(line.itemNo || "-", filters.itemSearch) + '</div>',
+                        '<div class="detail-line-meta">' + highlight(line.description || "No description", filters.itemSearch) + ' | Line ' + escapeHtml(line.lineNo || "-") + '</div>',
+                        '</div>',
+                        '<strong>' + escapeHtml(formatMoney(line.lineAmount)) + '</strong>',
+                        '</div>',
+                        '<div class="detail-line-bottom">',
+                        '<div class="detail-line-meta">Qty ' + escapeHtml(formatNumber(line.quantity)) + ' | Shipped ' + escapeHtml(formatNumber(line.shippedQty)) + ' | Outstanding ' + escapeHtml(formatNumber(line.outstandingQty)) + '</div>',
+                        '<div class="detail-line-meta">' + escapeHtml(formatMoney(line.unitPrice)) + ' unit</div>',
+                        '</div>',
+                        '</article>'
+                    ].join("");
+                }).join("") :
+                '<div class="empty-state"><strong>No lines found</strong>No sales lines were returned for this order.</div>';
+
+            dom.orderDetailBody.innerHTML = [
+                '<section class="detail-metrics" aria-label="Order summary metrics">',
+                renderDetailMetric("Total amount", formatMoney(order.revenue)),
+                renderDetailMetric("Outstanding", formatMoney(summary.outstandingAmount)),
+                renderDetailMetric("Shipped qty", formatNumber(summary.shippedQty)),
+                renderDetailMetric("Outstanding qty", formatNumber(summary.outstandingQty)),
+                '</section>',
+                '<section class="detail-fields" aria-label="Order fields">',
+                renderDetailField("Sales order", highlight(order.documentNo, filters.salesOrderSearch)),
+                renderDetailField("Purchase order", highlight(order.purchaseOrderNo || "Not available", filters.purchaseOrderSearch)),
+                renderDetailField("Customer", escapeHtml(order.customerName)),
+                renderDetailField("Customer no", escapeHtml(order.customerNo || "-")),
+                renderDetailField("Salesperson", escapeHtml(order.salespersonName)),
+                renderDetailField("Location", escapeHtml(order.locationCode || "-")),
+                renderDetailField("Status", '<span class="status-pill ' + getStatusClass(order.status) + '">' + escapeHtml(order.status) + '</span>'),
+                renderDetailField("Order date", escapeHtml(formatDate(order.orderDate))),
+                '</section>',
+                '<section>',
+                '<div class="detail-lines-title"><span>Order lines</span><span class="subtle">' + escapeHtml(formatNumber(lines.length)) + ' lines</span></div>',
+                '<div class="detail-line-list">' + lineMarkup + '</div>',
+                '</section>'
+            ].join("");
+        }
+
+        function updateBackButton(button, labelEl) {
+            const previous = state.detailHistory.length ? state.detailHistory[state.detailHistory.length - 1] : null;
+            if (!previous) {
+                button.hidden = true;
+                return;
+            }
+            button.hidden = false;
+            labelEl.textContent = previous.type === "order" ?
+                "Back to order " + previous.id :
+                "Back to product " + previous.id;
+        }
+
+        function renderDetailMetric(label, value) {
+            return '<div class="detail-metric"><div class="detail-label">' + escapeHtml(label) + '</div><div class="detail-value">' + escapeHtml(value) + '</div></div>';
+        }
+
+        function renderDetailField(label, valueMarkup) {
+            return '<div class="detail-field"><div class="detail-label">' + escapeHtml(label) + '</div><div class="detail-value">' + valueMarkup + '</div></div>';
+        }
+
+        function findOrderByDocumentNo(documentNo) {
+            return state.filteredOrders.find(function(order) {
+                return order.documentNo === documentNo;
+            }) || state.baseOrders.find(function(order) {
+                return order.documentNo === documentNo;
+            }) || state.allOrders.find(function(order) {
+                return order.documentNo === documentNo;
+            });
+        }
+
+        function openProductDetail(itemNo, options) {
+            const product = findProductMetric(itemNo);
+            if (!product) {
+                return;
+            }
+
+            const pushFrom = options && options.pushFrom;
+            if (pushFrom) {
+                state.detailHistory.push(pushFrom);
+            } else {
+                state.detailHistory = [];
+            }
+
+            if (dom.orderDetailPanel.classList.contains("is-open")) {
+                dom.orderDetailBackdrop.classList.remove("is-open");
+                dom.orderDetailPanel.classList.remove("is-open");
+                dom.orderDetailBackdrop.setAttribute("aria-hidden", "true");
+                dom.orderDetailPanel.setAttribute("aria-hidden", "true");
+            }
+
+            state.selectedItemNo = product.itemNo;
+            renderProductDetail(product);
+            dom.productDetailBackdrop.classList.add("is-open");
+            dom.productDetailPanel.classList.add("is-open");
+            dom.productDetailBackdrop.setAttribute("aria-hidden", "false");
+            dom.productDetailPanel.setAttribute("aria-hidden", "false");
+        }
+
+        function closeProductDetail() {
+            state.selectedItemNo = "";
+            state.detailHistory = [];
+            if (!dom.productDetailBackdrop || !dom.productDetailPanel) {
+                return;
+            }
+            dom.productDetailBackdrop.classList.remove("is-open");
+            dom.productDetailPanel.classList.remove("is-open");
+            dom.productDetailBackdrop.setAttribute("aria-hidden", "true");
+            dom.productDetailPanel.setAttribute("aria-hidden", "true");
+        }
+
+        function goBackInDetail() {
+            const previous = state.detailHistory.pop();
+            if (!previous) {
+                return;
+            }
+            const remainingHistory = state.detailHistory.slice();
+            if (previous.type === "order") {
+                openOrderDetail(previous.id);
+            } else if (previous.type === "product") {
+                openProductDetail(previous.id);
+            }
+            state.detailHistory = remainingHistory;
+        }
+
+        function findProductMetric(itemNo) {
+            const metrics = state.lastMetrics;
+            if (!metrics) {
+                return null;
+            }
+            return metrics.products.find(function(product) {
+                return product.itemNo === itemNo;
+            });
+        }
+
+        function getOrdersContainingItem(itemNo) {
+            const documentNos = new Set();
+            state.filteredLines.forEach(function(line) {
+                if (line.itemNo === itemNo) {
+                    documentNos.add(line.documentNo);
+                }
+            });
+            return Array.from(documentNos).map(function(documentNo) {
+                return findOrderByDocumentNo(documentNo);
+            }).filter(Boolean);
+        }
+
+        function renderProductDetail(product) {
+            const itemLines = state.filteredLines.filter(function(line) {
+                return line.itemNo === product.itemNo;
+            });
+            const orders = getOrdersContainingItem(product.itemNo);
+            const averageUnitPrice = itemLines.length ?
+                itemLines.reduce(function(sum, line) {
+                    return sum + line.unitPrice;
+                }, 0) / itemLines.length : 0;
+            const item = state.lookups.itemsByNo.get(normalizeCode(product.itemNo));
+
+            dom.productDetailTitle.textContent = product.itemNo;
+            dom.productDetailMeta.textContent = product.description + " | " + formatNumber(orders.length) + " order" + (orders.length === 1 ? "" : "s");
+            updateBackButton(dom.productDetailBackBtn, dom.productDetailBackLabel);
+
+            const orderMarkup = orders.length ?
+                orders.slice(0, 50).map(function(order) {
+                    const ordersLines = itemLines.filter(function(line) {
+                        return line.documentNo === order.documentNo;
+                    });
+                    const qty = ordersLines.reduce(function(sum, line) {
+                        return sum + line.quantity;
+                    }, 0);
+                    const amount = ordersLines.reduce(function(sum, line) {
+                        return sum + line.lineAmount;
+                    }, 0);
+                    return [
+                        '<article class="detail-line detail-line-clickable" data-open-order="' + escapeAttr(order.documentNo) + '" role="button" tabindex="0" aria-label="Open order ' + escapeAttr(order.documentNo) + ' details">',
+                        '<div class="detail-line-top">',
+                        '<div>',
+                        '<div class="detail-line-desc">' + escapeHtml(order.documentNo) + '</div>',
+                        '<div class="detail-line-meta">' + escapeHtml(order.customerName) + ' | ' + escapeHtml(formatDate(order.orderDate)) + '</div>',
+                        '</div>',
+                        '<strong>' + escapeHtml(formatMoney(amount)) + '</strong>',
+                        '</div>',
+                        '<div class="detail-line-bottom">',
+                        '<div class="detail-line-meta">Qty ' + escapeHtml(formatNumber(qty)) + '</div>',
+                        '<div class="detail-line-meta"><span class="status-pill ' + getStatusClass(order.status) + '">' + escapeHtml(order.status) + '</span></div>',
+                        '</div>',
+                        '</article>'
+                    ].join("");
+                }).join("") :
+                '<div class="empty-state"><strong>No orders found</strong>This item does not appear on any orders in the current filters.</div>';
+
+            dom.productDetailBody.innerHTML = [
+                '<section class="detail-fields" aria-label="Product fields">',
+                renderDetailField("Item no", escapeHtml(product.itemNo)),
+                renderDetailField("Description", escapeHtml(product.description)),
+                renderDetailField("Category", escapeHtml(item ? item.category || "-" : "-")),
+                renderDetailField("Orders containing item", escapeHtml(formatNumber(orders.length))),
+                '</section>',
+                '<section class="detail-metrics" aria-label="Product summary metrics">',
+                renderDetailMetric("Revenue", formatMoney(product.revenue)),
+                renderDetailMetric("Quantity sold", formatNumber(product.quantitySold)),
+                renderDetailMetric("Average unit price", formatMoney(averageUnitPrice)),
+                renderDetailMetric("Inventory on hand", formatNumber(product.inventory)),
+                '</section>',
+                '<section>',
+                '<div class="detail-lines-title"><span>Orders</span><span class="subtle">' + escapeHtml(formatNumber(orders.length)) + ' orders</span></div>',
+                '<div class="detail-line-list">' + orderMarkup + '</div>',
+                '</section>'
+            ].join("");
+        }
+
+        function renderTableBody(tbody, rows, emptyMessage, rowRenderer) {
+            if (!rows.length) {
+                tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><strong>No data</strong>' + escapeHtml(emptyMessage) + '</div></td></tr>';
+                return;
+            }
+            tbody.innerHTML = rows.map(rowRenderer).join("");
+        }
+
+        /* =========================
+           RENDERING
+           ========================= */
+        function renderDashboard(filters) {
+            const metrics = buildMetrics(state.filteredOrders, state.filteredLines);
+            console.log("Products:", metrics.products);
+            console.log("Products Count:", metrics.products.length);
+            console.log("Filtered Lines:", state.filteredLines.length);
+            state.lastMetrics = metrics;
+            renderHeaderSummary(metrics);
+            renderKpis(metrics);
+            renderCharts(metrics);
+            renderTables(metrics);
+            renderOrderGrid(filters);
+        }
+
+        function renderHeaderSummary(metrics) {
+            dom.accessPill.textContent = state.access ? state.access.accessLabel : "Access pending";
+            dom.dashboardSubtitle.textContent = [
+                formatNumber(metrics.totalOrders),
+                "orders loaded for",
+                state.access && state.access.isManager ? "manager view" : "salesperson view",
+                "from Dataverse."
+            ].join(" ");
+        }
+
+        function renderKpis(metrics) {
+            const cards = [{
+                label: "Total Orders",
+                value: formatNumber(metrics.totalOrders),
+                note: "Filtered order headers",
+                icon: ICONS.orders,
+                theme: ""
+            }, {
+                label: "Total Revenue",
+                value: formatMoney(metrics.totalRevenue),
+                note: "Amount including VAT when available",
+                icon: ICONS.revenue,
+                theme: "green"
+            }, {
+                label: "Outstanding Amount",
+                value: formatMoney(metrics.totalOutstandingAmount),
+                note: "Outstanding quantity x unit price",
+                icon: ICONS.outstanding,
+                theme: "orange"
+            }, {
+                label: "Shipped Quantity",
+                value: formatNumber(metrics.totalShippedQty),
+                note: "Quantity shipped across order lines",
+                icon: ICONS.shipped,
+                theme: "purple"
+            }, {
+                label: "Outstanding Quantity",
+                value: formatNumber(metrics.totalOutstandingQty),
+                note: "Remaining quantity across order lines",
+                icon: ICONS.outstanding,
+                theme: "orange"
+            }, {
+                label: "Average Order Value",
+                value: formatMoney(metrics.averageOrderValue),
+                note: "Revenue divided by orders",
+                icon: ICONS.avg,
+                theme: ""
+            }, {
+                label: "Total Customers",
+                value: formatNumber(metrics.totalCustomers),
+                note: "Distinct sell-to customers",
+                icon: ICONS.customers,
+                theme: "green"
+            }, {
+                label: "Total Items Sold",
+                value: formatNumber(metrics.totalItemsSold),
+                note: "Total ordered quantity",
+                icon: ICONS.products,
+                theme: "purple"
+            }];
+
+            dom.kpiGrid.innerHTML = cards.map(function(card) {
+                return [
+                    '<article class="card kpi-card ' + card.theme + '">',
+                    '<div class="kpi-icon" aria-hidden="true">' + card.icon + '</div>',
+                    '<div>',
+                    '<div class="kpi-label">' + escapeHtml(card.label) + '</div>',
+                    '<div class="kpi-value">' + escapeHtml(card.value) + '</div>',
+                    '<div class="kpi-note">' + escapeHtml(card.note) + '</div>',
+                    '</div>',
+                    '</article>'
+                ].join("");
+            }).join("");
+        }
+
+        function renderCharts(metrics) {
+            renderHorizontalBarChart(
+                dom.customerRevenueChart,
+                metrics.customers.slice(0, 5).map(function(row) {
+                    return {
+                        label: row.customerName,
+                        value: row.revenue
+                    };
+                }), {
+                    title: "Revenue by customer",
+                    money: true
+                }
+            );
+
+            renderVerticalBarChart(
+                dom.salespersonRevenueChart,
+                metrics.salespersons.slice(0, 10).map(function(row) {
+                    return {
+                        label: row.salesperson,
+                        value: row.revenue
+                    };
+                }), {
+                    title: "Revenue by salesperson",
+                    money: true
+                }
+            );
+
+            renderLineChart(dom.monthlyTrendChart, metrics.months);
+
+            renderHorizontalBarChart(
+                dom.topProductsChart,
+                metrics.products.slice(0, 10).map(function(row) {
+                    return {
+                        label: row.description || row.itemNo,
+                        value: row.revenue
+                    };
+                }), {
+                    title: "Top products by revenue",
+                    money: true
+                }
+            );
+        }
+
+        function renderTables(metrics) {
+            renderTableBody(
+                dom.topCustomersBody,
+                metrics.customers,
+                "No customer metrics are available for the selected filters.",
+                function(row) {
+                    return [
+                        '<tr>',
+                        '<td>' + escapeHtml(row.customerNo) + '</td>',
+                        '<td>' + escapeHtml(row.customerName) + '</td>',
+                        '<td class="num">' + escapeHtml(formatNumber(row.orders)) + '</td>',
+                        '<td class="num">' + escapeHtml(formatMoney(row.revenue)) + '</td>',
+                        '<td class="num">' + escapeHtml(formatMoney(row.averageOrderValue)) + '</td>',
+                        '<td class="num">' + escapeHtml(formatMoney(row.outstandingAmount)) + '</td>',
+                        '</tr>'
+                    ].join("");
+                }
+            );
+
+            renderTableBody(
+                dom.salespersonRankingBody,
+                metrics.salespersons,
+                "No salesperson metrics are available for the selected filters.",
+                function(row) {
+                    return [
+                        '<tr>',
+                        '<td>' + escapeHtml(row.salesperson) + '<span class="order-subtext">' + escapeHtml(row.code) + '</span></td>',
+                        '<td class="num">' + escapeHtml(formatNumber(row.orders)) + '</td>',
+                        '<td class="num">' + escapeHtml(formatMoney(row.revenue)) + '</td>',
+                        '<td class="num">' + escapeHtml(formatNumber(row.quantitySold)) + '</td>',
+                        '</tr>'
+                    ].join("");
+                }
+            );
+
+            renderTableBody(
+                dom.productAnalysisBody,
+                metrics.products.slice(0, 50),
+                "No product metrics are available for the selected filters.",
+                function(row) {
+                    return [
+                        '<tr class="row-clickable" data-open-product="' + escapeAttr(row.itemNo) + '" role="button" tabindex="0" aria-label="Open product ' + escapeAttr(row.itemNo) + ' details">',
+                        '<td>' + escapeHtml(row.itemNo) + '</td>',
+                        '<td>' + escapeHtml(row.description) + '</td>',
+                        '<td class="num">' + escapeHtml(formatNumber(row.quantitySold)) + '</td>',
+                        '<td class="num">' + escapeHtml(formatMoney(row.revenue)) + '</td>',
+                        '<td class="num">' + escapeHtml(formatNumber(row.inventory)) + '</td>',
+                        '</tr>'
+                    ].join("");
+                }
+            );
+        }
+
+        function renderUserProfile() {
+            if (!state.user) {
+                return;
+            }
+            dom.profileAvatar.textContent = state.user.initials;
+            dom.profileName.textContent = state.user.name;
+            dom.profileMeta.textContent = state.access ? state.access.accessLabel + (state.access.salespersonCode ? " - " + state.access.salespersonCode : "") : state.user.email;
+        }
+
+        function showAccessNotice() {
+            if (!state.access) {
+                return;
+            }
+
+            const notices = [];
+            if (!state.access.setupFound) {
+                notices.push("No BC User Setup record matched the logged-in user. The dashboard is restricted because no salesperson code could be resolved.");
+            }
+
+            if (!state.access.isManager && state.access.salespersonCode && !state.baseOrders.length) {
+                notices.push("Salesperson " + state.access.salespersonCode + " was resolved, but no orders were returned for that salesperson.");
+            }
+
+            if (!state.purchaseOrderFieldAvailable && (CONFIG.PURCHASE_ORDER_FIELDS || []).length) {
+                notices.push("Purchase order filter is disabled because none of these fields were available on the sales order table: " + CONFIG.PURCHASE_ORDER_FIELDS.join(", ") + ".");
+            }
+
+            if (notices.length) {
+                showNotice(notices.join(" "));
+            }
+        }
+
+        function renderEmptyDashboard() {
+            const emptyMetrics = buildMetrics([], []);
+            state.filteredOrders = [];
+            state.filteredLines = [];
+            renderKpis(emptyMetrics);
+            renderCharts(emptyMetrics);
+            renderTables(emptyMetrics);
+            renderOrderGrid(getFilterValues());
+        }
+
+        function renderEmpty(container, message) {
+            container.innerHTML = '<div class="empty-state"><strong>No data</strong>' + escapeHtml(message) + '</div>';
+        }
+
+        /* =========================
+           APP INIT
+           ========================= */
+        function cacheDom() {
+            [   
+                "closeReportModal",
+                "reportModal",
+                "reportPreview",
+                "printSelectedReport",
+                "managerViewBtn",
+                "refreshBtn",
+                "printBtn",
+                "closeBtn",
+                "profileAvatar",
+                "profileName",
+                "profileMeta",
+                "dashboardSubtitle",
+                "accessPill",
+                "noticeBox",
+                "errorBox",
+                "kpiGrid",
+                "customerFilter",
+                "salespersonFilter",
+                "salesOrderSearch",
+                "purchaseOrderSearch",
+                "itemSearch",
+                "startDateFilter",
+                "endDateFilter",
+                "locationFilter",
+                "applyFiltersBtn",
+                "resetFiltersBtn",
+                "customerRevenueChart",
+                "salespersonRevenueChart",
+                "monthlyTrendChart",
+                "topProductsChart",
+                "topCustomersBody",
+                "salespersonRankingBody",
+                "orderSummary",
+                "orderGrid",
+                "productAnalysisBody",
+                "loadingOverlay",
+                "loadingText",
+                "orderDetailBackdrop",
+                "orderDetailPanel",
+                "orderDetailTitle",
+                "orderDetailMeta",
+                "orderDetailBody",
+                "orderDetailBackBtn",
+                "orderDetailBackLabel",
+                "closeOrderDetailBtn",
+                "productDetailBackdrop",
+                "productDetailPanel",
+                "productDetailTitle",
+                "productDetailMeta",
+                "productDetailBody",
+                "productDetailBackBtn",
+                "productDetailBackLabel",
+                "closeProductDetailBtn",
+                "footerYear"
+            ].forEach(function(id) {
+                dom[id] = document.getElementById(id);
+            });
+        }
+
+        function applyReportAccessControl() {
+            const isManager = Boolean(state.access && state.access.isManager);
+            const options = Array.from(document.querySelectorAll(".report-option"));
+
+            options.forEach(function(option) {
+                const managerOnly = option.getAttribute("data-manager-only") === "true";
+                option.hidden = managerOnly && !isManager;
+            });
+
+            if (isManager && state.selectedReport === "openOrdersGrouped") {
+                options.forEach(function(option) {
+                    option.classList.remove("active");
+                });
+                const executiveOption = document.querySelector('.report-option[data-report="executive"]');
+                if (executiveOption) {
+                    executiveOption.classList.add("active");
+                    state.selectedReport = "executive";
+                }
+                return;
+            }
+
+            const currentOption = document.querySelector('.report-option[data-report="' + state.selectedReport + '"]');
+            const currentIsHidden = !currentOption || currentOption.hidden;
+
+            if (currentIsHidden) {
+                const firstVisible = options.find(function(option) {
+                    return !option.hidden;
+                });
+                if (firstVisible) {
+                    options.forEach(function(option) {
+                        option.classList.remove("active");
+                    });
+                    firstVisible.classList.add("active");
+                    state.selectedReport = firstVisible.dataset.report;
+                }
+            }
+        }
+
+        document.querySelectorAll(".report-option")
+    .forEach(function(option){
+
+        option.addEventListener("click", function(){
+
+            document
+                .querySelectorAll(".report-option")
+                .forEach(function(item){
+
+                    item.classList.remove("active");
+
+                });
+
+            this.classList.add("active");
+
+            state.selectedReport =
+                this.dataset.report;
+
+            loadReportPreview(
+                state.selectedReport
+            );
+
+        });
+
+    });
+
+        function bindEvents() {
+            dom.managerViewBtn?.addEventListener("click", toggleManagerView);
+            dom.refreshBtn.addEventListener("click", loadDashboardData);
+            // dom.printBtn.addEventListener("click", function() {
+            //     window.print();
+            // });
+            dom.printBtn.addEventListener("click", function(){
+
+                applyReportAccessControl();
+
+                dom.reportModal.classList.add("show");
+
+                loadReportPreview(
+                    state.selectedReport
+                );
+
+            });
+            dom.closeReportModal.addEventListener("click", () => {
+                dom.reportModal.classList.remove("show");
+            });
+            dom.reportModal.addEventListener("click", function(e){
+
+                if(e.target === dom.reportModal){
+                    dom.reportModal.classList.remove("show");
+                }
+
+            });
+
+            dom.printSelectedReport
+            .addEventListener("click", function(){
+
+                const isManager = Boolean(state.access && state.access.isManager);
+
+                let reportToPrint = state.selectedReport;
+                if (reportToPrint === "executive" && !isManager) {
+                    reportToPrint = "openOrdersGrouped";
+                }
+
+                switch(reportToPrint){
+
+                    case "executive":
+
+                        generateExecutiveReport();
+                        break;
+
+                    case "openOrdersGrouped":
+
+                        generateOpenOrdersGroupedReport();
+                        break;
+
+                    default:
+
+                        generateOpenOrdersGroupedReport();
+                        break;
+                }
+
+                dom.reportModal
+                    .classList.remove("show");
+
+                setTimeout(function(){
+
+                    window.print();
+
+                },300);
+
+            });
+            dom.closeBtn.addEventListener("click", closeDashboard);
+            dom.applyFiltersBtn.addEventListener("click", applyFilters);
+            dom.resetFiltersBtn.addEventListener("click", resetFilters);
+            dom.closeOrderDetailBtn.addEventListener("click", function() {
+                closeOrderDetail(true);
+            });
+            dom.orderDetailBackdrop.addEventListener("click", function() {
+                closeOrderDetail(true);
+            });
+            dom.closeProductDetailBtn.addEventListener("click", closeProductDetail);
+            dom.productDetailBackdrop.addEventListener("click", closeProductDetail);
+            dom.orderDetailBackBtn.addEventListener("click", goBackInDetail);
+            dom.productDetailBackBtn.addEventListener("click", goBackInDetail);
+
+            [dom.salesOrderSearch, dom.purchaseOrderSearch, dom.itemSearch].forEach(function(input) {
+                input.addEventListener("input", scheduleFilterApply);
+                input.addEventListener("keydown", function(event) {
+                    if (event.key === "Enter") {
+                        window.clearTimeout(filterTimer);
+                        applyFilters();
+                    }
+                });
+            });
+
+            [dom.customerFilter, dom.salespersonFilter, dom.startDateFilter, dom.endDateFilter, dom.locationFilter].forEach(function(input) {
+                input.addEventListener("change", scheduleFilterApply);
+            });
+
+            dom.orderGrid.addEventListener("click", function(event) {
+                const button = event.target.closest("[data-expand-order]");
+                if (button) {
+                    const documentNo = button.getAttribute("data-expand-order");
+                    if (state.expandedOrders.has(documentNo)) {
+                        state.expandedOrders.delete(documentNo);
+                    } else {
+                        state.expandedOrders.add(documentNo);
+                    }
+                    renderOrderGrid(getFilterValues());
+                    return;
+                }
+
+                const row = event.target.closest("[data-open-order]");
+                if (row) {
+                    openOrderDetail(row.getAttribute("data-open-order"));
+                }
+            });
+
+            dom.orderGrid.addEventListener("keydown", function(event) {
+                if (event.key !== "Enter" && event.key !== " ") {
+                    return;
+                }
+                const row = event.target.closest("[data-open-order]");
+                if (!row || event.target.closest("[data-expand-order]")) {
+                    return;
+                }
+                event.preventDefault();
+                openOrderDetail(row.getAttribute("data-open-order"));
+            });
+
+            dom.productAnalysisBody.addEventListener("click", function(event) {
+                const row = event.target.closest("[data-open-product]");
+                if (row) {
+                    openProductDetail(row.getAttribute("data-open-product"));
+                }
+            });
+
+            dom.productAnalysisBody.addEventListener("keydown", function(event) {
+                if (event.key !== "Enter" && event.key !== " ") {
+                    return;
+                }
+                const row = event.target.closest("[data-open-product]");
+                if (!row) {
+                    return;
+                }
+                event.preventDefault();
+                openProductDetail(row.getAttribute("data-open-product"));
+            });
+
+            dom.productDetailBody.addEventListener("click", function(event) {
+                const item = event.target.closest("[data-open-order]");
+                if (item) {
+                    const fromItemNo = state.selectedItemNo;
+                    openOrderDetail(item.getAttribute("data-open-order"), {
+                        pushFrom: {
+                            type: "product",
+                            id: fromItemNo
+                        }
+                    });
+                }
+            });
+
+            dom.productDetailBody.addEventListener("keydown", function(event) {
+                if (event.key !== "Enter" && event.key !== " ") {
+                    return;
+                }
+                const item = event.target.closest("[data-open-order]");
+                if (!item) {
+                    return;
+                }
+                event.preventDefault();
+                const fromItemNo = state.selectedItemNo;
+                openOrderDetail(item.getAttribute("data-open-order"), {
+                    pushFrom: {
+                        type: "product",
+                        id: fromItemNo
+                    }
+                });
+            });
+
+            dom.orderDetailBody.addEventListener("click", function(event) {
+                const item = event.target.closest("[data-open-product]");
+                if (item) {
+                    const fromOrderNo = state.selectedOrderNo;
+                    openProductDetail(item.getAttribute("data-open-product"), {
+                        pushFrom: {
+                            type: "order",
+                            id: fromOrderNo
+                        }
+                    });
+                }
+            });
+
+            dom.orderDetailBody.addEventListener("keydown", function(event) {
+                if (event.key !== "Enter" && event.key !== " ") {
+                    return;
+                }
+                const item = event.target.closest("[data-open-product]");
+                if (!item) {
+                    return;
+                }
+                event.preventDefault();
+                const fromOrderNo = state.selectedOrderNo;
+                openProductDetail(item.getAttribute("data-open-product"), {
+                    pushFrom: {
+                        type: "order",
+                        id: fromOrderNo
+                    }
+                });
+            });
+
+            document.querySelectorAll("[data-scroll-target]").forEach(function(button) {
+                button.addEventListener("click", function() {
+                    document.querySelectorAll(".nav-item").forEach(function(item) {
+                        item.classList.remove("is-active");
+                    });
+                    button.classList.add("is-active");
+                    const target = document.getElementById(button.getAttribute("data-scroll-target"));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
+                    }
+                });
+            });
+
+            document.addEventListener("keydown", function(event) {
+                if (event.key !== "Escape") {
+                    return;
+                }
+                if (dom.productDetailPanel.classList.contains("is-open")) {
+                    closeProductDetail();
+                    return;
+                }
+                if (dom.orderDetailPanel.classList.contains("is-open")) {
+                    closeOrderDetail(true);
+                    return;
+                }
+                if (dom.reportModal.classList.contains("show")) {
+                    dom.reportModal.classList.remove("show");
+                }
+            });
+        }
+
+        function buildOpenOrdersGroupedData() {
+            const openOrders = state.baseOrders.filter(function(order) {
+                return getStatusClass(order.status) === "open";
+            });
+            const documentSet = new Set(openOrders.map(function(order) {
+                return order.documentNo;
+            }));
+            const linesByOrder = new Map();
+            state.allLines.forEach(function(line) {
+                if (!documentSet.has(line.documentNo)) {
+                    return;
+                }
+                const list = linesByOrder.get(line.documentNo) || [];
+                list.push(line);
+                linesByOrder.set(line.documentNo, list);
+            });
+
+            const salespersonMap = new Map();
+            openOrders.forEach(function(order) {
+                const spKey = order.salespersonCode || "Unassigned";
+                const sp = salespersonMap.get(spKey) || {
+                    salespersonCode: spKey,
+                    salespersonName: order.salespersonName || spKey,
+                    total: 0,
+                    orderCount: 0,
+                    customers: new Map()
+                };
+                sp.total += order.revenue;
+                sp.orderCount += 1;
+
+                const custKey = order.customerNo || order.customerName || "(blank)";
+                const cust = sp.customers.get(custKey) || {
+                    customerNo: order.customerNo || "",
+                    customerName: order.customerName || "Unknown customer",
+                    total: 0,
+                    orderCount: 0,
+                    orders: []
+                };
+                cust.total += order.revenue;
+                cust.orderCount += 1;
+                cust.orders.push({
+                    documentNo: order.documentNo,
+                    purchaseOrderNo: order.purchaseOrderNo,
+                    orderDate: order.orderDate,
+                    total: order.revenue,
+                    lines: linesByOrder.get(order.documentNo) || []
+                });
+                sp.customers.set(custKey, cust);
+                salespersonMap.set(spKey, sp);
+            });
+
+            const salespeople = Array.from(salespersonMap.values()).map(function(sp) {
+                const customers = Array.from(sp.customers.values()).map(function(cust) {
+                    cust.orders.sort(function(a, b) {
+                        return (b.orderDate ? b.orderDate.getTime() : 0) - (a.orderDate ? a.orderDate.getTime() : 0);
+                    });
+                    return cust;
+                }).sort(function(a, b) {
+                    return b.total - a.total;
+                });
+                return {
+                    salespersonCode: sp.salespersonCode,
+                    salespersonName: sp.salespersonName,
+                    total: sp.total,
+                    orderCount: sp.orderCount,
+                    customers: customers
+                };
+            }).sort(function(a, b) {
+                return b.total - a.total;
+            });
+
+            return {
+                salespeople: salespeople,
+                grandTotal: openOrders.reduce(function(sum, order) {
+                    return sum + order.revenue;
+                }, 0),
+                orderCount: openOrders.length
+            };
+        }
+
+        function generateOrderDetailReport() {
+            const metrics = state.lastMetrics;
+
+            let html = `
+                <div class="report-header">
+                    <h1>Straight Arrow Sales Report</h1>
+                    <div>Generated: ${new Date().toLocaleString()}</div>
+                    <hr/>
+                </div>
+
+                <div class="report-summary">
+                    <table>
+                        <tr>
+                            <td><b>Total Orders</b></td>
+                            <td>${metrics.totalOrders}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Total Revenue</b></td>
+                            <td>${formatMoney(metrics.totalRevenue)}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Outstanding Amount</b></td>
+                            <td>${formatMoney(metrics.totalOutstandingAmount)}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <h2>Sales Orders</h2>
+
+                <table class="print-table">
+                    <thead>
+                        <tr>
+                            <th>Order No</th>
+                            <th>Customer</th>
+                            <th>Salesperson</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            state.filteredOrders.forEach(function(order) {
+
+                html += `
+                    <tr>
+                        <td>${order.documentNo}</td>
+                        <td>${order.customerName}</td>
+                        <td>${order.salespersonName}</td>
+                        <td>${formatDate(order.orderDate)}</td>
+                        <td>${formatMoney(order.revenue)}</td>
+                        <td>${order.status}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById("printReport").innerHTML = html;
+        }
+
+        function generateOpenOrdersGroupedReport() {
+            const data = buildOpenOrdersGroupedData();
+
+            let html = `
+                <div class="report-header">
+                    <h1>Open Orders by Sales Person and Customer</h1>
+                    <div>As of: ${new Date().toLocaleString()}</div>
+                    <hr/>
+                </div>
+            `;
+
+            if (!data.salespeople.length) {
+                html += `<p>No open orders were found for the current access scope.</p>`;
+            }
+
+            data.salespeople.forEach(function(sp) {
+                html += `
+                    <table class="print-table group-table">
+                        <tbody>
+                            <tr class="group-row group-row-salesperson">
+                                <td class="group-label">Sales Rep</td>
+                                <td>${escapeHtml(sp.salespersonName)}</td>
+                                <td class="num">${escapeHtml(formatMoney(sp.total))}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                `;
+
+                sp.customers.forEach(function(cust) {
+                    html += `
+                        <table class="print-table group-table">
+                            <tbody>
+                                <tr class="group-row group-row-customer">
+                                    <td colspan="2">${escapeHtml(cust.customerName)}${cust.customerNo ? " (Customer# " + escapeHtml(cust.customerNo) + ")" : ""}</td>
+                                    <td class="num">${escapeHtml(formatMoney(cust.total))}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="print-table line-table">
+                            <thead>
+                                <tr>
+                                    <th>Order Date</th>
+                                    <th>OrderNo</th>
+                                    <th>ItemNo</th>
+                                    <th>Description</th>
+                                    <th class="num">Amt</th>
+                                </tr>
+                            </thead>
+                    `;
+
+                    if (!cust.orders.length) {
+                        html += `<tbody><tr><td colspan="5">No open orders available.</td></tr></tbody>`;
+                    }
+
+                    cust.orders.forEach(function(order) {
+                        html += `<tbody class="order-group">`;
+
+                        if (!order.lines.length) {
+                            html += `
+                                <tr class="order-group-line">
+                                    <td>${escapeHtml(formatDate(order.orderDate))}</td>
+                                    <td>${escapeHtml(order.documentNo)}</td>
+                                    <td colspan="3">No line details available.</td>
+                                </tr>
+                            `;
+                        }
+
+                        order.lines.forEach(function(line, idx) {
+                            const isFirst = idx === 0;
+                            html += `
+                                <tr class="order-group-line">
+                                    <td>${isFirst ? escapeHtml(formatDate(order.orderDate)) : ""}</td>
+                                    <td>${isFirst ? escapeHtml(order.documentNo) : ""}</td>
+                                    <td>${escapeHtml(line.itemNo || "-")}</td>
+                                    <td>${escapeHtml(line.description || "-")}</td>
+                                    <td class="num">${escapeHtml(formatMoney(line.lineAmount))}</td>
+                                </tr>
+                            `;
+                        });
+
+                        if (order.lines.length) {
+                            html += `
+                                <tr class="order-subtotal-row">
+                                    <td colspan="4">Order ${escapeHtml(order.documentNo)} Total${order.purchaseOrderNo ? " (PO " + escapeHtml(order.purchaseOrderNo) + ")" : ""}</td>
+                                    <td class="num">${escapeHtml(formatMoney(order.total))}</td>
+                                </tr>
+                            `;
+                        }
+
+                        html += `</tbody>`;
+                    });
+
+                    html += `
+                        </table>
+                    `;
+                });
+            });
+
+            document.getElementById("printReport").innerHTML = html;
+        }
+
+        function generateExecutiveReport() {
+
+            const m = state.lastMetrics;
+
+            const topCustomer =
+                m.customers.length > 0
+                    ? m.customers[0]
+                    : null;
+
+            const topSalesperson =
+                m.salespersons.length > 0
+                    ? m.salespersons[0]
+                    : null;
+
+            let html = `
+
+                <div class="report-cover">
+
+                    <h1>Straight Arrow</h1>
+
+                    <h2>Executive Sales Summary</h2>
+
+                    <p>
+                        Generated on:
+                        ${new Date().toLocaleDateString()}
+                    </p>
+
+                </div>
+
+                <hr>
+
+                <h2>Executive KPIs</h2>
+
+                <div class="executive-kpis">
+
+                    <div class="exec-card">
+                        <h3>Total Revenue</h3>
+                        <div>${formatMoney(m.totalRevenue)}</div>
+                    </div>
+
+                    <div class="exec-card">
+                        <h3>Total Orders</h3>
+                        <div>${formatNumber(m.totalOrders)}</div>
+                    </div>
+
+                    <div class="exec-card">
+                        <h3>Outstanding Amount</h3>
+                        <div>${formatMoney(m.totalOutstandingAmount)}</div>
+                    </div>
+
+                    <div class="exec-card">
+                        <h3>Average Order Value</h3>
+                        <div>${formatMoney(m.averageOrderValue)}</div>
+                    </div>
+
+                    <div class="exec-card">
+                        <h3>Total Customers</h3>
+                        <div>${formatNumber(m.totalCustomers)}</div>
+                    </div>
+
+                    <div class="exec-card">
+                        <h3>Total Items Sold</h3>
+                        <div>${formatNumber(m.totalItemsSold)}</div>
+                    </div>
+
+                </div>
+
+                <br><br>
+
+                <h2>Business Highlights</h2>
+
+                <table class="print-table">
+
+                    <tr>
+                        <td><b>Top Customer</b></td>
+                        <td>${topCustomer ? topCustomer.customerName : "-"}</td>
+                        <td>${topCustomer ? formatMoney(topCustomer.revenue) : "-"}</td>
+                    </tr>
+
+                    <tr>
+                        <td><b>Top Salesperson</b></td>
+                        <td>${topSalesperson ? topSalesperson.salesperson : "-"}</td>
+                        <td>${topSalesperson ? formatMoney(topSalesperson.revenue) : "-"}</td>
+                    </tr>
+
+                </table>
+
+                <br><br>
+
+                <h2>Top 5 Customers</h2>
+
+                <table class="print-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Customer</th>
+                            <th>Orders</th>
+                            <th>Revenue</th>
+                            <th>Outstanding</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+            `;
+
+            m.customers
+                .slice(0,5)
+                .forEach(function(c){
+
+                    html += `
+                        <tr>
+                            <td>${c.customerName}</td>
+                            <td>${formatNumber(c.orders)}</td>
+                            <td>${formatMoney(c.revenue)}</td>
+                            <td>${formatMoney(c.outstandingAmount)}</td>
+                        </tr>
+                    `;
+                });
+
+            html += `
+                    </tbody>
+
+                </table>
+
+                <br><br>
+
+                <h2>Top 5 Sales Orders</h2>
+
+                <table class="print-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Order No</th>
+                            <th>Customer</th>
+                            <th>Salesperson</th>
+                            <th>Order Date</th>
+                            <th>Amount</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+            `;
+
+            state.filteredOrders
+                .slice()
+                .sort(function(a, b){
+                    return b.revenue - a.revenue;
+                })
+                .slice(0,5)
+                .forEach(function(o){
+
+                    html += `
+                        <tr>
+                            <td>${escapeHtml(o.documentNo)}</td>
+                            <td>${escapeHtml(o.customerName)}</td>
+                            <td>${escapeHtml(o.salespersonName)}</td>
+                            <td>${escapeHtml(formatDate(o.orderDate))}</td>
+                            <td>${escapeHtml(formatMoney(o.revenue))}</td>
+                        </tr>
+                    `;
+                });
+
+            html += `
+                    </tbody>
+
+                </table>
+
+                <br><br>
+
+                <h2>Top 5 Salespersons</h2>
+
+                <table class="print-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Salesperson</th>
+                            <th>Orders</th>
+                            <th>Revenue</th>
+                            <th>Quantity Sold</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+            `;
+
+            m.salespersons
+                .slice(0,5)
+                .forEach(function(s){
+
+                    html += `
+                        <tr>
+                            <td>${s.salesperson}</td>
+                            <td>${formatNumber(s.orders)}</td>
+                            <td>${formatMoney(s.revenue)}</td>
+                            <td>${formatNumber(s.quantitySold)}</td>
+                        </tr>
+                    `;
+                });
+
+            html += `
+                    </tbody>
+
+                </table>
+
+                <br><br>
+
+                <h2>Management Insights</h2>
+
+                <ul>
+
+                    <li>
+                        Total revenue generated:
+                        ${formatMoney(m.totalRevenue)}
+                    </li>
+
+                    <li>
+                        Top customer:
+                        ${topCustomer ? topCustomer.customerName : "-"}
+                    </li>
+
+                    <li>
+                        Top salesperson:
+                        ${topSalesperson ? topSalesperson.salesperson : "-"}
+                    </li>
+
+                    <li>
+                        Average order value:
+                        ${formatMoney(m.averageOrderValue)}
+                    </li>
+
+                    <li>
+                        Outstanding amount:
+                        ${formatMoney(m.totalOutstandingAmount)}
+                    </li>
+
+                </ul>
+            `;
+
+            document.getElementById("printReport").innerHTML = html;
+
+        }
+
+        function generateSalesPerformanceReport() {
+
+            const rows =
+                state.lastMetrics.salespersons;
+
+            let html = `
+
+                <h1>Sales Performance Report</h1>
+
+                <table class="print-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Salesperson</th>
+                            <th>Orders</th>
+                            <th>Revenue</th>
+                            <th>Quantity Sold</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+            `;
+
+            rows.forEach(function(row){
+
+                html += `
+                    <tr>
+                        <td>${row.salesperson}</td>
+                        <td>${row.orders}</td>
+                        <td>${formatMoney(row.revenue)}</td>
+                        <td>${formatNumber(row.quantitySold)}</td>
+                    </tr>
+                `;
+
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById("printReport").innerHTML =
+                html;
+        }
+
+        function buildExecutiveReportHtml(){
+
+    const m = state.lastMetrics;
+
+    const topCustomer =
+        m.customers.length > 0
+            ? m.customers[0]
+            : null;
+
+    const topSalesperson =
+        m.salespersons.length > 0
+            ? m.salespersons[0]
+            : null;
+
+    let customerRows = "";
+
+    m.customers
+        .slice(0,5)
+        .forEach(function(c){
+            customerRows += `
+                <tr>
+                    <td>${escapeHtml(c.customerName)}</td>
+                    <td>${escapeHtml(formatNumber(c.orders))}</td>
+                    <td>${escapeHtml(formatMoney(c.revenue))}</td>
+                    <td>${escapeHtml(formatMoney(c.outstandingAmount))}</td>
+                </tr>
+            `;
+        });
+
+    let orderRows = "";
+
+    state.filteredOrders
+        .slice()
+        .sort(function(a, b){
+            return b.revenue - a.revenue;
+        })
+        .slice(0,5)
+        .forEach(function(o){
+            orderRows += `
+                <tr>
+                    <td>${escapeHtml(o.documentNo)}</td>
+                    <td>${escapeHtml(o.customerName)}</td>
+                    <td>${escapeHtml(o.salespersonName)}</td>
+                    <td>${escapeHtml(formatDate(o.orderDate))}</td>
+                    <td>${escapeHtml(formatMoney(o.revenue))}</td>
+                </tr>
+            `;
+        });
+
+    let salespersonRows = "";
+
+    m.salespersons
+        .slice(0,5)
+        .forEach(function(s){
+            salespersonRows += `
+                <tr>
+                    <td>${escapeHtml(s.salesperson)}</td>
+                    <td>${escapeHtml(formatNumber(s.orders))}</td>
+                    <td>${escapeHtml(formatMoney(s.revenue))}</td>
+                    <td>${escapeHtml(formatNumber(s.quantitySold))}</td>
+                </tr>
+            `;
+        });
+
+    return `
+
+        <div class="preview-page">
+
+            <h1>Executive Summary</h1>
+
+            <hr>
+
+            <div class="executive-kpis">
+
+                <div class="exec-card">
+                    <h3>Total Revenue</h3>
+                    <div>${formatMoney(m.totalRevenue)}</div>
+                </div>
+
+                <div class="exec-card">
+                    <h3>Total Orders</h3>
+                    <div>${formatNumber(m.totalOrders)}</div>
+                </div>
+
+                <div class="exec-card">
+                    <h3>Customers</h3>
+                    <div>${formatNumber(m.totalCustomers)}</div>
+                </div>
+
+                <div class="exec-card">
+                    <h3>Outstanding</h3>
+                    <div>${formatMoney(m.totalOutstandingAmount)}</div>
+                </div>
+
+            </div>
+
+            <br>
+
+            <h2>Business Highlights</h2>
+
+            <table class="print-table">
+                <tr>
+                    <td><b>Top Customer</b></td>
+                    <td>${topCustomer ? escapeHtml(topCustomer.customerName) : "-"}</td>
+                    <td>${topCustomer ? escapeHtml(formatMoney(topCustomer.revenue)) : "-"}</td>
+                </tr>
+                <tr>
+                    <td><b>Top Salesperson</b></td>
+                    <td>${topSalesperson ? escapeHtml(topSalesperson.salesperson) : "-"}</td>
+                    <td>${topSalesperson ? escapeHtml(formatMoney(topSalesperson.revenue)) : "-"}</td>
+                </tr>
+            </table>
+
+            <br>
+
+            <h2>Top 5 Customers</h2>
+
+            <table class="print-table">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Orders</th>
+                        <th>Revenue</th>
+                        <th>Outstanding</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${customerRows}
+                </tbody>
+            </table>
+
+            <br>
+
+            <h2>Top 5 Sales Orders</h2>
+
+            <table class="print-table">
+                <thead>
+                    <tr>
+                        <th>Order No</th>
+                        <th>Customer</th>
+                        <th>Salesperson</th>
+                        <th>Order Date</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${orderRows}
+                </tbody>
+            </table>
+
+            <br>
+
+            <h2>Top 5 Salespersons</h2>
+
+            <table class="print-table">
+                <thead>
+                    <tr>
+                        <th>Salesperson</th>
+                        <th>Orders</th>
+                        <th>Revenue</th>
+                        <th>Quantity Sold</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${salespersonRows}
+                </tbody>
+            </table>
+
+        </div>
+
+    `;
+}
+
+function buildSalesPerformanceReportHtml(){
+
+    let rows = "";
+
+    state.lastMetrics.salespersons
+        .slice(0,10)
+        .forEach(function(s){
+
+            rows += `
+                <tr>
+                    <td>${s.salesperson}</td>
+                    <td>${s.orders}</td>
+                    <td>${formatMoney(s.revenue)}</td>
+                    <td>${formatNumber(s.quantitySold)}</td>
+                </tr>
+            `;
+        });
+
+    return `
+
+        <div class="preview-page">
+
+            <h1>Sales Performance Report</h1>
+
+            <table class="print-table">
+
+                <thead>
+                    <tr>
+                        <th>Salesperson</th>
+                        <th>Orders</th>
+                        <th>Revenue</th>
+                        <th>Qty</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${rows}
+                </tbody>
+
+            </table>
+
+        </div>
+
+    `;
+}
+
+function buildOrderDetailReportHtml(){
+
+    let rows = "";
+
+    state.filteredOrders
+        .slice(0,20)
+        .forEach(function(order){
+
+            rows += `
+                <tr>
+                    <td>${order.documentNo}</td>
+                    <td>${order.customerName}</td>
+                    <td>${order.salespersonName}</td>
+                    <td>${formatMoney(order.revenue)}</td>
+                </tr>
+            `;
+        });
+
+    return `
+
+        <div class="preview-page">
+
+            <h1>Order Detail Report</h1>
+
+            <table class="print-table">
+
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Customer</th>
+                        <th>Salesperson</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${rows}
+                </tbody>
+
+            </table>
+
+        </div>
+
+    `;
+}
+
+function buildOpenOrdersGroupedReportHtml(){
+
+    const data = buildOpenOrdersGroupedData();
+
+    let body = "";
+
+    if (!data.salespeople.length) {
+        body += `<p>No open orders were found for the current access scope.</p>`;
+    }
+
+    data.salespeople.forEach(function(sp){
+
+        body += `
+            <table class="print-table group-table">
+                <tbody>
+                    <tr class="group-row group-row-salesperson">
+                        <td class="group-label">Sales Rep</td>
+                        <td>${escapeHtml(sp.salespersonName)}</td>
+                        <td class="num">${escapeHtml(formatMoney(sp.total))}</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+
+        sp.customers.forEach(function(cust){
+
+            body += `
+                <table class="print-table group-table">
+                    <tbody>
+                        <tr class="group-row group-row-customer">
+                            <td colspan="2">${escapeHtml(cust.customerName)}${cust.customerNo ? " (Customer# " + escapeHtml(cust.customerNo) + ")" : ""}</td>
+                            <td class="num">${escapeHtml(formatMoney(cust.total))}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="print-table line-table">
+                    <thead>
+                        <tr>
+                            <th>Order Date</th>
+                            <th>OrderNo</th>
+                            <th>ItemNo</th>
+                            <th>Description</th>
+                            <th class="num">Amt</th>
+                        </tr>
+                    </thead>
+            `;
+
+            if (!cust.orders.length) {
+                body += `<tbody><tr><td colspan="5">No open orders available.</td></tr></tbody>`;
+            }
+
+            cust.orders.forEach(function(order){
+
+                body += `<tbody class="order-group">`;
+
+                if (!order.lines.length) {
+                    body += `
+                        <tr class="order-group-line">
+                            <td>${escapeHtml(formatDate(order.orderDate))}</td>
+                            <td>${escapeHtml(order.documentNo)}</td>
+                            <td colspan="3">No line details available.</td>
+                        </tr>
+                    `;
+                }
+
+                order.lines.forEach(function(line, idx){
+                    const isFirst = idx === 0;
+                    body += `
+                        <tr class="order-group-line">
+                            <td>${isFirst ? escapeHtml(formatDate(order.orderDate)) : ""}</td>
+                            <td>${isFirst ? escapeHtml(order.documentNo) : ""}</td>
+                            <td>${escapeHtml(line.itemNo || "-")}</td>
+                            <td>${escapeHtml(line.description || "-")}</td>
+                            <td class="num">${escapeHtml(formatMoney(line.lineAmount))}</td>
+                        </tr>
+                    `;
+                });
+
+                if (order.lines.length) {
+                    body += `
+                        <tr class="order-subtotal-row">
+                            <td colspan="4">Order ${escapeHtml(order.documentNo)} Total${order.purchaseOrderNo ? " (PO " + escapeHtml(order.purchaseOrderNo) + ")" : ""}</td>
+                            <td class="num">${escapeHtml(formatMoney(order.total))}</td>
+                        </tr>
+                    `;
+                }
+
+                body += `</tbody>`;
+            });
+
+            body += `
+                </table>
+            `;
+        });
+    });
+
+    return `
+
+        <div class="preview-page">
+
+            <h1>Open Orders by Sales Person and Customer</h1>
+            <div class="subtle">As of: ${escapeHtml(new Date().toLocaleString())}</div>
+            <hr>
+
+            ${body}
+
+        </div>
+
+    `;
+}
+
+        function loadReportPreview(type){
+
+    const isManager = Boolean(state.access && state.access.isManager);
+    const effectiveType = (type === "executive" && !isManager) ? "openOrdersGrouped" : type;
+
+    switch(effectiveType){
+
+        case "executive":
+
+            dom.reportPreview.innerHTML =
+                buildExecutiveReportHtml();
+
+            break;
+
+        case "sales":
+
+            dom.reportPreview.innerHTML =
+                buildSalesPerformanceReportHtml();
+
+            break;
+
+        case "openOrdersGrouped":
+
+            dom.reportPreview.innerHTML =
+                buildOpenOrdersGroupedReportHtml();
+
+            break;
+
+        default:
+
+            dom.reportPreview.innerHTML =
+                buildOpenOrdersGroupedReportHtml();
+
+            break;
+    }
+}
+
+        function scheduleFilterApply() {
+            window.clearTimeout(filterTimer);
+            filterTimer = window.setTimeout(applyFilters, 260);
+        }
+
+        function closeDashboard() {
+            try {
+                if (window.parent && window.parent.Xrm && window.parent.Xrm.Navigation && window.parent.Xrm.Navigation.navigateBack) {
+                    window.parent.Xrm.Navigation.navigateBack();
+                    return;
+                }
+            } catch (error) {
+                console.warn("navigateBack failed", error);
+            }
+            window.close();
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            cacheDom();
+            dom.footerYear.textContent = String(new Date().getFullYear());
+            bindEvents();
+            loadDashboardData();
+        });
+
+        /* =========================
+           HELPERS
+           ========================= */
+        function groupBy(rows, key) {
+            const map = new Map();
+            rows.forEach(function(row) {
+                const value = row[key];
+                const group = map.get(value) || [];
+                group.push(row);
+                map.set(value, group);
+            });
+            return map;
+        }
+
+        function uniqueOptions(rows, mapFn) {
+            const lookup = new Map();
+            rows.forEach(function(row) {
+                const option = mapFn(row);
+                if (option.value && !lookup.has(option.value)) {
+                    lookup.set(option.value, option);
+                }
+            });
+            return Array.from(lookup.values()).sort(function(a, b) {
+                return a.label.localeCompare(b.label);
+            });
+        }
+
+        function populateSelect(select, options, defaultLabel) {
+            const current = select.value;
+            select.innerHTML = '<option value="">' + escapeHtml(defaultLabel) + '</option>' + options.map(function(option) {
+                return '<option value="' + escapeAttr(option.value) + '">' + escapeHtml(option.label) + '</option>';
+            }).join("");
+            if (options.some(function(option) {
+                    return option.value === current;
+                })) {
+                select.value = current;
+            }
+        }
+
+        function setLoading(visible, text) {
+            dom.loadingOverlay.classList.toggle("is-visible", Boolean(visible));
+            if (text) {
+                dom.loadingText.textContent = text;
+            }
+        }
+
+        function showError(error) {
+            const message = error && error.message ? error.message : String(error);
+            dom.errorBox.textContent = message;
+            dom.errorBox.classList.add("is-visible");
+            console.error(error);
+        }
+
+        function showNotice(message) {
+            dom.noticeBox.textContent = message;
+            dom.noticeBox.classList.add("is-visible");
+        }
+
+        function clearMessages() {
+            dom.noticeBox.textContent = "";
+            dom.noticeBox.classList.remove("is-visible");
+            dom.errorBox.textContent = "";
+            dom.errorBox.classList.remove("is-visible");
+        }
+
+        function getFormattedValue(row, field) {
+            return row[field + "@OData.Community.Display.V1.FormattedValue"];
+        }
+
+        function getPurchaseOrderNo(row) {
+            const field = asText(state.purchaseOrderField).trim();
+            if (!field) {
+                return "";
+            }
+            return asText(row[field] || getFormattedValue(row, field)).trim();
+        }
+
+        function asText(value) {
+            if (value === null || value === undefined) {
+                return "";
+            }
+            return String(value);
+        }
+
+        function toNumber(value) {
+            if (value === null || value === undefined || value === "") {
+                return 0;
+            }
+            if (typeof value === "number") {
+                return Number.isFinite(value) ? value : 0;
+            }
+            const parsed = Number(String(value).replace(/[$,\s]/g, ""));
+            return Number.isFinite(parsed) ? parsed : 0;
+        }
+
+        function toBoolean(value, formatted) {
+            if (typeof value === "boolean") {
+                return value;
+            }
+            const text = normalizeSearch(value || formatted);
+            return text === "true" || text === "yes" || text === "1";
+        }
+
+        function cleanGuid(value) {
+            return asText(value).replace(/[{}]/g, "").toLowerCase();
+        }
+
+        function normalizeCode(value) {
+            return asText(value).trim().toUpperCase();
+        }
+
+        function normalizeUserKey(value) {
+            return asText(value).trim().replace(/[{}]/g, "").toLowerCase();
+        }
+
+        function normalizeSearch(value) {
+            return asText(value).trim().toLowerCase();
+        }
+
+        function parseDate(value) {
+            if (!value) {
+                return null;
+            }
+            const date = new Date(value);
+            return Number.isNaN(date.getTime()) ? null : date;
+        }
+
+        function endOfDay(date) {
+            if (!date) {
+                return null;
+            }
+            const copy = new Date(date);
+            copy.setHours(23, 59, 59, 999);
+            return copy;
+        }
+
+        function formatDate(date) {
+            if (!date) {
+                return "No date";
+            }
+            return date.toLocaleDateString(CONFIG.LOCALE, {
+                year: "numeric",
+                month: "short",
+                day: "2-digit"
+            });
+        }
+
+        function getMonthKey(date) {
+            if (!date) {
+                return "";
+            }
+            return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0");
+        }
+
+        function getMonthLabel(date) {
+            if (!date) {
+                return "";
+            }
+            return date.toLocaleDateString(CONFIG.LOCALE, {
+                month: "short",
+                year: "2-digit"
+            });
+        }
+
+        function formatMoney(value) {
+            return moneyFormatter.format(toNumber(value));
+        }
+
+        function compactMoney(value) {
+            return compactMoneyFormatter.format(toNumber(value));
+        }
+
+        function formatNumber(value) {
+            return numberFormatter.format(toNumber(value));
+        }
+
+        function sortByRevenue(a, b) {
+            return b.revenue - a.revenue;
+        }
+
+        function getInitials(name) {
+            const parts = asText(name).trim().split(/\s+/).filter(Boolean);
+            if (!parts.length) {
+                return "SA";
+            }
+            return parts.slice(0, 2).map(function(part) {
+                return part[0].toUpperCase();
+            }).join("");
+        }
+
+        function getStatusClass(status) {
+            const value = normalizeSearch(status);
+            if (value.indexOf("release") >= 0 || value.indexOf("ship") >= 0 || value.indexOf("complete") >= 0) {
+                return "released";
+            }
+            if (value.indexOf("open") >= 0) {
+                return "open";
+            }
+            if (value.indexOf("pending") >= 0) {
+                return "pending";
+            }
+            if (value.indexOf("cancel") >= 0 || value.indexOf("reject") >= 0) {
+                return "cancelled";
+            }
+            return "";
+        }
+
+        function truncate(value, maxLength) {
+            const text = asText(value);
+            if (text.length <= maxLength) {
+                return text;
+            }
+            return text.slice(0, Math.max(0, maxLength - 1)) + "...";
+        }
+
+        function highlight(value, search) {
+            const text = asText(value);
+            const term = asText(search).trim();
+            if (!term) {
+                return escapeHtml(text);
+            }
+
+            const lowerText = text.toLowerCase();
+            const lowerTerm = term.toLowerCase();
+            let output = "";
+            let position = 0;
+            let matchIndex = lowerText.indexOf(lowerTerm, position);
+
+            while (matchIndex >= 0) {
+                output += escapeHtml(text.slice(position, matchIndex));
+                output += "<mark>" + escapeHtml(text.slice(matchIndex, matchIndex + term.length)) + "</mark>";
+                position = matchIndex + term.length;
+                matchIndex = lowerText.indexOf(lowerTerm, position);
+            }
+
+            output += escapeHtml(text.slice(position));
+            return output;
+        }
+
+        function escapeHtml(value) {
+            return asText(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        function escapeAttr(value) {
+            return escapeHtml(value);
+        }
+    </script>
+    <div id="printReport"></div>
+</body>
+
+</html>
